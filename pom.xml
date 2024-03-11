@@ -22,6 +22,7 @@
         <module>knrpc-core</module>
         <module>knrpc-demo-api</module>
         <module>knrpc-demo-provider</module>
+        <module>knrpc-demo-consumer</module>
     </modules>
 
     <build>

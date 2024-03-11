@@ -16,5 +16,6 @@ public class RpcResponse<T> {
 
     boolean status; // 状态：true
     T data;         // 数据：new User()
+    Exception ex;
 
 }

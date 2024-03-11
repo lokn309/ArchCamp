@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.provider;
 
+import cn.lokn.knrpc.core.MethodUtils;
 import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
@@ -34,16 +35,23 @@ public class ProviderBoostrap implements ApplicationContextAware {
     private Map<String, Object> skeleton = new HashMap<>();
 
     public RpcResponse invoke(RpcRequest request) {
+        if (MethodUtils.checkLocalMethod(request.getMethod())) {
+            return null;
+        }
         final Object bean = skeleton.get(request.getService());
+        RpcResponse rpcResponse = new RpcResponse();
         try {
             Method method = findMethod(bean.getClass(), request.getMethod());
             final Object result = method.invoke(bean, request.getArgs());
-            return new RpcResponse(true, result);
+            rpcResponse.setStatus(true);
+            rpcResponse.setData(result);
+            return rpcResponse;
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
+        return rpcResponse;
     }
 
     /**

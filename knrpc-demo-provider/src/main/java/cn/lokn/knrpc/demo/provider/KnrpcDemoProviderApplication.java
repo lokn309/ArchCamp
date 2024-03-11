@@ -46,8 +46,15 @@ public class KnrpcDemoProviderApplication {
             request.setMethod("findById");
             request.setArgs(new Object[]{100});
 
-            final RpcResponse rpcResponse = providerBoostrap.invoke(request);
-            System.out.println("return : " + rpcResponse.getData());
+            final RpcResponse userRpcResponse = providerBoostrap.invoke(request);
+            System.out.println("user return : " + userRpcResponse.getData());
+
+            request.setService("cn.lokn.knrpc.demo.api.OrderService");
+            request.setMethod("findById");
+            request.setArgs(new Object[]{10});
+            final RpcResponse orderRpcResponse = providerBoostrap.invoke(request);
+            System.out.println("order return : " + orderRpcResponse.getData());
+
         };
     }
 
