@@ -25,7 +25,7 @@ public class ConsumerBootstrap implements ApplicationContextAware {
     private Map<String, Object> stub = new HashMap<>();
 
     public void start() {
-        // 这里有一个技巧，利用 applicationRunner 让所有的 Bean 初始化完成
+        // 这里有一个技巧，利用 applicationRunner 让所有的 Bean 初始化完后，在进行 Bean 实例的获取
         final String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
             final Object bean = applicationContext.getBean(name);
