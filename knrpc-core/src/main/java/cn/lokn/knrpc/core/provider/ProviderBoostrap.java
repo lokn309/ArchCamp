@@ -1,16 +1,13 @@
 package cn.lokn.knrpc.core.provider;
 
-import cn.lokn.knrpc.core.MethodUtils;
+import cn.lokn.knrpc.core.utils.MethodUtils;
 import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -41,7 +38,7 @@ public class ProviderBoostrap implements ApplicationContextAware {
         final Object bean = skeleton.get(request.getService());
         RpcResponse rpcResponse = new RpcResponse();
         try {
-            Method method = findMethod(bean.getClass(), request.getMethod());
+            Method method = findMethod(bean.getClass(), request.getMethod(), request.getMethodSign());
             final Object result = method.invoke(bean, request.getArgs());
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
@@ -49,6 +46,8 @@ public class ProviderBoostrap implements ApplicationContextAware {
         } catch (InvocationTargetException e) {
             rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e) {
+            rpcResponse.setEx(new RuntimeException(e.getMessage()));
+        } catch (Exception e) {
             rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
         return rpcResponse;
@@ -60,11 +59,26 @@ public class ProviderBoostrap implements ApplicationContextAware {
      * @return
      */
     private Method findMethod(Class<?> aClass, String methodName) {
-        // TODO 注意此次偷懒了，只匹配了一个方法，但是有多方法是需要怎么处理？
+        // TODO 此处需要解决重载的问题
         for (Method method : aClass.getMethods()) {
             if (method.getName().equals(methodName)) {
                 return method;
             }
+        }
+        return null;
+    }
+
+    private Method findMethod(Class<?> aClass, String methodName, String methodSign) {
+        if (methodSign == null) {
+            methodSign = "";
+        }
+        // TODO 此处需要解决重载的问题
+        for (Method method : aClass.getMethods()) {
+            final String sign = MethodUtils.methodSign(method);
+            if (method.getName().equals(methodName) && (sign.equals(methodSign))) {
+                return method;
+            }
+
         }
         return null;
     }

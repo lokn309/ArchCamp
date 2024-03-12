@@ -5,7 +5,16 @@ Content-Type: application/json
 {
   "service": "cn.lokn.knrpc.demo.api.UserService",
   "method": "findById",
-  "args": [100]
+  "args": [100, "tom"],
+  "methodSign": "1_int,String"
 }
 
-###
+### 多参数传入
+POST http://localhost:8080/
+Content-Type: application/json
+
+{
+  "service": "cn.lokn.knrpc.demo.api.UserService",
+  "method": "findById",
+  "args": [100, "张飞"]
+}

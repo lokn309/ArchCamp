@@ -29,17 +29,23 @@ public class KnrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumerRunner() {
         return x -> {
-            User user = userService.findById(1);
-            System.out.println(" ===> user = " + user);
+//            User user = userService.findById(1);
+//            System.out.println(" ===> user = " + user);
 
-            final Order order = orderService.findById(20);
-            System.out.println(" ===> order = " + order);
+//            final Order order = orderService.findById(20);
+//            System.out.println(" ===> order = " + order);
 
 //            final Order order404 = orderService.findById(404);
 //            System.out.println(" ===> order404 = " + order404);
 
-            final String string = orderService.toString();
-            System.out.println(" ===> orderString = " + string);
+//            final String string = orderService.toString();
+//            System.out.println(" ===> orderString = " + string);
+
+            final User byId = userService.findById(20, "张飞");
+            System.out.println(" ===> user$findById(id, name) = " + byId);
+            System.out.println("-------------------------");
+            final User byId1 = userService.findById(30);
+            System.out.println(" ===> user$findById(id) = " + byId1);
 
         };
     }

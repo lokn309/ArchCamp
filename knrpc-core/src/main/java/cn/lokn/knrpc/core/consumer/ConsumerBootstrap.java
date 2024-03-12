@@ -73,7 +73,7 @@ public class ConsumerBootstrap implements ApplicationContextAware {
             Field[] fields = aClass.getDeclaredFields();
             for (Field field : fields) {
                 if (field.isAnnotationPresent(KNConsumer.class)) {
-                    result.add (field);
+                    result.add(field);
                 }
             }
             aClass = aClass.getSuperclass();
