@@ -41,19 +41,21 @@ public class KnrpcDemoProviderApplication {
     @Bean
     ApplicationRunner providerRun() {
         return x -> {
+            // test 1 parameter method
             final RpcRequest request = new RpcRequest();
             request.setService("cn.lokn.knrpc.demo.api.UserService");
-            request.setMethod("findById");
+            request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
             final RpcResponse userRpcResponse = providerBoostrap.invoke(request);
             System.out.println("user return : " + userRpcResponse.getData());
 
-            request.setService("cn.lokn.knrpc.demo.api.OrderService");
-            request.setMethod("findById");
-            request.setArgs(new Object[]{10});
-            final RpcResponse orderRpcResponse = providerBoostrap.invoke(request);
-            System.out.println("order return : " + orderRpcResponse.getData());
+            // test 2 parameters method
+            request.setService("cn.lokn.knrpc.demo.api.UserService");
+            request.setMethodSign("findById@2_int_java.lang.String");
+            request.setArgs(new Object[]{10, "kn"});
+            final RpcResponse user = providerBoostrap.invoke(request);
+            System.out.println("user return : " + user.getData());
 
         };
     }

@@ -15,4 +15,6 @@ public interface UserService {
 
     String getName();
 
+    String getName(int id);
+
 }

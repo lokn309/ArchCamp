@@ -1,6 +1,6 @@
 package cn.lokn.knrpc.core.consumer;
 
-import cn.lokn.knrpc.core.utils.MethodUtils;
+import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import com.alibaba.fastjson.JSON;
@@ -36,8 +36,6 @@ public class KNInvocationHandler implements InvocationHandler {
 
         RpcRequest request = new RpcRequest();
         request.setService(service.getCanonicalName());
-        request.setMethod(method.getName());
-        // TODO 新增字段
         request.setMethodSign(MethodUtils.methodSign(method));
         request.setArgs(args);
 

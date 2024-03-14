@@ -31,7 +31,7 @@ public class ConsumerBootstrap implements ApplicationContextAware {
             final Object bean = applicationContext.getBean(name);
             List<Field> fields = findAnnotatedField(bean.getClass());
 
-            fields.stream().forEach(f -> {
+            fields.forEach(f -> {
                 try {
                     // 先拿类型
                     final Class<?> service = f.getType();

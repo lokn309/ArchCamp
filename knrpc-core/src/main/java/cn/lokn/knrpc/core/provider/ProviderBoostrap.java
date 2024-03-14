@@ -1,18 +1,22 @@
 package cn.lokn.knrpc.core.provider;
 
-import cn.lokn.knrpc.core.utils.MethodUtils;
 import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
+import cn.lokn.knrpc.core.meta.ProviderMeta;
+import cn.lokn.knrpc.core.util.MethodUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @description: provider 启动类
@@ -29,59 +33,8 @@ public class ProviderBoostrap implements ApplicationContextAware {
     ApplicationContext applicationContext; // 获取所有的bean
 
     // 获取所有的provider
-    private Map<String, Object> skeleton = new HashMap<>();
-
-    public RpcResponse invoke(RpcRequest request) {
-        if (MethodUtils.checkLocalMethod(request.getMethod())) {
-            return null;
-        }
-        final Object bean = skeleton.get(request.getService());
-        RpcResponse rpcResponse = new RpcResponse();
-        try {
-            Method method = findMethod(bean.getClass(), request.getMethod(), request.getMethodSign());
-            final Object result = method.invoke(bean, request.getArgs());
-            rpcResponse.setStatus(true);
-            rpcResponse.setData(result);
-            return rpcResponse;
-        } catch (InvocationTargetException e) {
-            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
-        } catch (IllegalAccessException e) {
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
-        } catch (Exception e) {
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
-        }
-        return rpcResponse;
-    }
-
-    /**
-     * @param aClass
-     * @param methodName
-     * @return
-     */
-    private Method findMethod(Class<?> aClass, String methodName) {
-        // TODO 此处需要解决重载的问题
-        for (Method method : aClass.getMethods()) {
-            if (method.getName().equals(methodName)) {
-                return method;
-            }
-        }
-        return null;
-    }
-
-    private Method findMethod(Class<?> aClass, String methodName, String methodSign) {
-        if (methodSign == null) {
-            methodSign = "";
-        }
-        // TODO 此处需要解决重载的问题
-        for (Method method : aClass.getMethods()) {
-            final String sign = MethodUtils.methodSign(method);
-            if (method.getName().equals(methodName) && (sign.equals(methodSign))) {
-                return method;
-            }
-
-        }
-        return null;
-    }
+    // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
+    private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
     /**
      * 构建获取所有的provider
@@ -97,7 +50,50 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     private void genInterface(Object x) {
         final Class<?> itfer = x.getClass().getInterfaces()[0];
-        skeleton.put(itfer.getCanonicalName(), x);
+        final Method[] methods = itfer.getMethods();
+        for (Method method : methods) {
+            if (MethodUtils.checkLocalMethod(method)) {
+                continue;
+            }
+            createProvider(itfer, x, method);
+        }
+    }
+
+    private void createProvider(Class<?> itfer, Object x, Method method) {
+        ProviderMeta meta = new ProviderMeta();
+        meta.setMethod(method);
+        meta.setServiceImpl(x);
+        meta.setMethodSign(MethodUtils.methodSign(method));
+        System.out.println(" create a provider : " + meta);
+        skeleton.add(itfer.getCanonicalName(), meta);
+    }
+
+    public RpcResponse invoke(RpcRequest request) {
+        if (MethodUtils.checkLocalMethod(request.getMethodSign())) {
+            return null;
+        }
+        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
+        RpcResponse rpcResponse = new RpcResponse();
+        try {
+            ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
+            Method method = meta.getMethod();
+            final Object result = method.invoke(meta.getServiceImpl(), request.getArgs());
+            rpcResponse.setStatus(true);
+            rpcResponse.setData(result);
+            return rpcResponse;
+        } catch (InvocationTargetException e) {
+            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
+        } catch (IllegalAccessException e) {
+            rpcResponse.setEx(new RuntimeException(e.getMessage()));
+        } catch (Exception e) {
+            rpcResponse.setEx(new RuntimeException(e.getMessage()));
+        }
+        return rpcResponse;
+    }
+
+    private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {
+        final Optional<ProviderMeta> result = providerMetas.stream().filter(meta -> meta.getMethodSign().equals(methodSign)).findFirst();
+        return result.orElse(null);
     }
 
 }
