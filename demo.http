@@ -6,7 +6,7 @@ Content-Type: application/json
   "service": "cn.lokn.knrpc.demo.api.UserService",
   "method": "findById",
   "args": [100, "tom"],
-  "methodSign": "1_int,String"
+  "methodSign": "findById@2_int_java.lang.String"
 }
 
 ### 多参数传入

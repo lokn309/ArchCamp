@@ -12,6 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
+import java.util.Arrays;
+
 @SpringBootApplication
 @Import({ConsumerConfig.class})
 public class KnrpcDemoConsumerApplication {
@@ -46,6 +48,13 @@ public class KnrpcDemoConsumerApplication {
             System.out.println("-------------------------");
             final User byId1 = userService.findById(30);
             System.out.println(" ===> user$findById(id) = " + byId1);
+
+            System.out.println(" ===> getName(id)" + userService.getName(12));
+
+            System.out.println(" ===> getId(long) " + userService.getId(10));
+
+            System.out.println(Arrays.toString(userService.getIds()));
+            System.out.println(Arrays.toString(userService.getIds(new int[]{12, 23, 34})));
 
         };
     }

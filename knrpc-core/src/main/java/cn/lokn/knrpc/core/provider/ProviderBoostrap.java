@@ -5,6 +5,7 @@ import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
+import cn.lokn.knrpc.core.util.TypeUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -14,6 +15,8 @@ import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,14 +52,15 @@ public class ProviderBoostrap implements ApplicationContextAware {
     }
 
     private void genInterface(Object x) {
-        final Class<?> itfer = x.getClass().getInterfaces()[0];
-        final Method[] methods = itfer.getMethods();
-        for (Method method : methods) {
-            if (MethodUtils.checkLocalMethod(method)) {
-                continue;
+        Arrays.stream(x.getClass().getInterfaces()).forEach(itfer -> {
+            final Method[] methods = itfer.getMethods();
+            for (Method method : methods) {
+                if (MethodUtils.checkLocalMethod(method)) {
+                    continue;
+                }
+                createProvider(itfer, x, method);
             }
-            createProvider(itfer, x, method);
-        }
+        });
     }
 
     private void createProvider(Class<?> itfer, Object x, Method method) {
@@ -77,18 +81,31 @@ public class ProviderBoostrap implements ApplicationContextAware {
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();
-            final Object result = method.invoke(meta.getServiceImpl(), request.getArgs());
+            Object[] args = processArgs(request.getArgs(), method.getParameterTypes());
+            final Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
             rpcResponse.setData(result);
             return rpcResponse;
         } catch (InvocationTargetException e) {
+            e.printStackTrace();
             rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
             rpcResponse.setEx(new RuntimeException(e.getMessage()));
         } catch (Exception e) {
+            e.printStackTrace();
             rpcResponse.setEx(new RuntimeException(e.getMessage()));
         }
         return rpcResponse;
+    }
+
+    private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
+        if (args == null || args.length == 0) return args;
+        Object[] result = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            result[i] = TypeUtils.cast(args[i], parameterTypes[i]);
+        }
+        return result;
     }
 
     private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {

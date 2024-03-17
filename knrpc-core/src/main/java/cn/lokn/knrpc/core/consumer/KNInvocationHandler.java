@@ -3,11 +3,14 @@ package cn.lokn.knrpc.core.consumer;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
+import cn.lokn.knrpc.core.util.TypeUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +48,17 @@ public class KNInvocationHandler implements InvocationHandler {
             if (data instanceof JSONObject jsonResult) {
                 return jsonResult.toJavaObject(method.getReturnType());
             }
-            return data;
+            if (data instanceof JSONArray jsonArray) {
+                Object[] array = jsonArray.toArray();
+                Class<?> componentType = method.getReturnType().getComponentType();
+                final Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    Array.set(resultArray, i, array[i]);
+                }
+                return resultArray;
+            }
+
+            return TypeUtils.cast(data, method.getReturnType());
         } else {
             final Exception ex = rpcResponse.getEx();
             throw new RuntimeException(ex);

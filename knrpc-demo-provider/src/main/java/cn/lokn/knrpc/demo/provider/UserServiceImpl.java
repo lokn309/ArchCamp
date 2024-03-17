@@ -5,6 +5,9 @@ import cn.lokn.knrpc.demo.api.User;
 import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @description: 服务提供者的实现
  * @author: lokn
@@ -42,4 +45,26 @@ public class UserServiceImpl implements UserService {
     public String getName(int id) {
         return "getName = " + id;
     }
+
+    @Override
+    public int[] getIds() {
+        return new int[]{0 ,2, 4};
+    }
+
+    @Override
+    public int[] getIds(int[] ids) {
+        return ids;
+    }
+
+    @Override
+    public long[] getLongIds() {
+        return new long[]{1L, 3L, 5L};
+    }
+
+    @Override
+    public List<User> getLists() {
+        return new ArrayList<>();
+    }
+
+
 }
