@@ -2,6 +2,7 @@ package cn.lokn.knrpc.core.consumer;
 
 import cn.lokn.knrpc.core.annotation.KNConsumer;
 import cn.lokn.knrpc.core.api.LoadBalancer;
+import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.api.RpcContext;
 import lombok.Data;
@@ -31,16 +32,11 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     public void start() {
         Router router = applicationContext.getBean(Router.class);
         LoadBalancer loadBalancer = applicationContext.getBean(LoadBalancer.class);
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
-
-        final String urls = environment.getProperty("knrpc.providers", "");
-        if (Strings.isEmpty(urls)) {
-            System.out.println("knrpc.providers is empty.");
-        }
-        String[] providers = urls.split(",");
 
         // 这里有一个技巧，利用 applicationRunner 让所有的 Bean 初始化完后，在进行 Bean 实例的获取
         final String[] names = applicationContext.getBeanDefinitionNames();
@@ -57,7 +53,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                     Object consumer = stub.get(serviceName);
                     if (consumer == null) {
                         // 创建代理对象
-                        consumer = createConsumer(service, context, List.of(providers));
+                        consumer = createFromRegistry(service, context, rc);
                     }
                     // 可见行变为true，不然反射时，会失败
                     f.setAccessible(true);
@@ -70,6 +66,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
         }
 
+    }
+
+    private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
+        final String serverName = service.getCanonicalName();
+        final List<String> providers = rc.fetchAll(serverName);
+        return createConsumer(service, context, providers);
     }
 
     private Object createConsumer(Class<?> service, RpcContext context, List<String> providers) {
