@@ -11,18 +11,26 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
 @SpringBootApplication
+@RestController
 @Import({ConsumerConfig.class})
 public class KnrpcDemoConsumerApplication {
 
     @KNConsumer
     UserService userService;
 
-    @KNConsumer
-    OrderService orderService;
+//    @KNConsumer
+//    OrderService orderService;
+
+    @RequestMapping("/")
+    public User invoke(int id) {
+        return userService.findById(id);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(KnrpcDemoConsumerApplication.class, args);

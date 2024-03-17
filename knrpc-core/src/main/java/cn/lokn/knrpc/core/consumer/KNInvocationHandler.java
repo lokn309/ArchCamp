@@ -1,18 +1,19 @@
 package cn.lokn.knrpc.core.consumer;
 
+import cn.lokn.knrpc.core.api.*;
 import cn.lokn.knrpc.core.util.MethodUtils;
-import cn.lokn.knrpc.core.api.RpcRequest;
-import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.util.TypeUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import okhttp3.*;
+import org.apache.catalina.authenticator.jaspic.PersistentProviderRegistrations;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -26,9 +27,13 @@ public class KNInvocationHandler implements InvocationHandler {
     final static MediaType JSON_TYPE = MediaType.get("application/json; charset=utf-8");
 
     Class<?> service;
+    RpcContext context;
+    List<String> providers;
 
-    public KNInvocationHandler(Class<?> service) {
+    public KNInvocationHandler(Class<?> service, RpcContext context, List<String> providers) {
         this.service = service;
+        this.context = context;
+        this.providers = providers;
     }
 
     @Override
@@ -42,7 +47,11 @@ public class KNInvocationHandler implements InvocationHandler {
         request.setMethodSign(MethodUtils.methodSign(method));
         request.setArgs(args);
 
-        RpcResponse rpcResponse = post(request);
+        final List<String> urls = context.getRouter().route(providers);
+        final String url = (String) context.getLoadBalancer().choose(urls);
+        System.out.println("loadBalancer.choose(urls) == " + url);
+        RpcResponse rpcResponse = post(request, url);
+
         if (rpcResponse.isStatus()) {
             final Object data = rpcResponse.getData();
             if (data instanceof JSONObject jsonResult) {
@@ -72,11 +81,11 @@ public class KNInvocationHandler implements InvocationHandler {
             .connectTimeout(1, TimeUnit.SECONDS)
             .build();
 
-    private RpcResponse post(RpcRequest rpcRequest) {
+    private RpcResponse post(RpcRequest rpcRequest, String url) {
         final String reqJson = JSON.toJSONString(rpcRequest);
         System.out.println("reqJson = " + reqJson);
         Request request = new Request.Builder()
-                .url("http://localhost:8080/")
+                .url(url)
                 .post(RequestBody.create(reqJson, JSON_TYPE))
                 .build();
         try {

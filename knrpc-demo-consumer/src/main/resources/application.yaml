@@ -1,2 +1,5 @@
 server:
   port: 8088
+
+knrpc:
+  providers: http://localhost:8081/,http://localhost:8082/

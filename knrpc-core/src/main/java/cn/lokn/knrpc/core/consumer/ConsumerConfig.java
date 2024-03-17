@@ -1,5 +1,9 @@
 package cn.lokn.knrpc.core.consumer;
 
+import cn.lokn.knrpc.core.api.LoadBalancer;
+import cn.lokn.knrpc.core.api.Router;
+import cn.lokn.knrpc.core.cluster.RandomLoadBalancer;
+import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +33,17 @@ public class ConsumerConfig {
             consumerBootstrap.start();
             System.out.println(" ===> consumerBootstrap started....");
         };
+    }
+
+    @Bean
+    public LoadBalancer loadBalancer() {
+//        return LoadBalancer.Default;
+        return new RoundRibonLoadBalancer();
+    }
+
+    @Bean
+    public Router router() {
+        return Router.Default;
     }
 
 }
