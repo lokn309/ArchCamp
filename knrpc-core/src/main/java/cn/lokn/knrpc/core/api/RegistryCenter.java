@@ -4,13 +4,43 @@ import java.util.List;
 
 public interface RegistryCenter {
 
+    /**
+     * provider 和 consumer 使用
+     */
     void start();
+
+    /**
+     * provider 和 consumer 使用
+     */
     void stop();
+
+    /**
+     * provider 使用
+     *
+     * @param service
+     * @param instance
+     */
     void register(String service, String instance);
-    void unregister(String service,String instance);
-    // consumer 侧
+
+    /**
+     * provider 使用
+     *
+     * @param service
+     * @param instance
+     */
+    void unregister(String service, String instance);
+
+    /**
+     * consumer 侧
+     */
     List<String> fetchAll(String service);
+
+    /**
+     * consumer 侧
+     */
 //    void subscribe();
+
+//        void heartbeat()
 
     class StaticRegistryCenter implements RegistryCenter {
 

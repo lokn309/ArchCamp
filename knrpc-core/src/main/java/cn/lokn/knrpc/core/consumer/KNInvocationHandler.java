@@ -66,6 +66,7 @@ public class KNInvocationHandler implements InvocationHandler {
                 }
                 return resultArray;
             }
+            // TODO 待添加 List 和 Map 的处理逻辑
 
             return TypeUtils.cast(data, method.getReturnType());
         } else {

@@ -57,4 +57,6 @@ public class ConsumerConfig {
         return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
     }
 
+    
+
 }

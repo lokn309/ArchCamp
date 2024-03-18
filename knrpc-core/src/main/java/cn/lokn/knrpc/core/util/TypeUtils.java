@@ -35,6 +35,7 @@ public class TypeUtils {
             Class<?> componentType = type.getComponentType();
             Object array = Array.newInstance(componentType, length);
             for (int i = 0; i < length; i++) {
+                // TODO 待添加原生类型 和 jdk自身类型处理
                 Array.set(array, i, Array.get(origin, i));
             }
             return array;
