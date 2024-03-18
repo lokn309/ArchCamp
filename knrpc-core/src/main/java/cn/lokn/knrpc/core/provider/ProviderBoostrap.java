@@ -1,13 +1,18 @@
 package cn.lokn.knrpc.core.provider;
 
+import ch.qos.logback.core.net.server.Client;
 import cn.lokn.knrpc.core.annotation.KNProvider;
+import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.util.TypeUtils;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Data;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,13 +21,14 @@ import org.springframework.util.MultiValueMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 /**
- * @description: provider 启动类
+ * @description: 服务提供者的启动类
  * @author: lokn
  * @date: 2024/03/07 23:27
  */
@@ -39,16 +45,50 @@ public class ProviderBoostrap implements ApplicationContextAware {
     // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
+    private String instance;
+
+    @Value("${server.port}")
+    private String port;
+
     /**
      * 构建获取所有的provider
      */
+
     @PostConstruct
-    public void buildProviders() {
+    public void init() {
         // 获取所有加了自定义 @KNProvider 注解的bean
         final Map<String, Object> providers = applicationContext.getBeansWithAnnotation(KNProvider.class);
+        providers.forEach((x, y) -> System.out.println(x));
         providers.values().forEach(
                 this::genInterface
         );
+    }
+
+    /**
+     * 延迟服务暴露，只有当spring bean 完成后才向zk注册
+     */
+    @SneakyThrows
+    public void start() {
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        instance = ip + "_" + port;
+        skeleton.keySet().forEach(this::registerService);
+    }
+
+
+    @PreDestroy
+    public void stop() {
+        skeleton.keySet().forEach(this::unRegisterService);
+    }
+
+    private void unRegisterService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.unregister(service, instance);
+    }
+
+
+    private void registerService(String service) {
+        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        rc.register(service, instance);
     }
 
     private void genInterface(Object x) {

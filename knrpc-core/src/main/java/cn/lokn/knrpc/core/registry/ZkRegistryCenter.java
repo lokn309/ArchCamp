@@ -26,10 +26,13 @@ public class ZkRegistryCenter implements RegistryCenter {
                 .namespace("knrpc")
                 .retryPolicy(retryPolicy)
                 .build();
+        System.out.println(" ===> zk client starting.");
+        client.start();
     }
 
     @Override
     public void stop() {
+        System.out.println(" ===> zk client stop.");
         client.close();
     }
 
@@ -43,6 +46,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
             // 创建实例的临时节点
             String instancePath = servicePath + "/" + instance;
+            System.out.println(" ===> register to zk: " + instancePath);
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -59,6 +63,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
             // 创建实例的临时节点
             String instancePath = servicePath + "/" + instance;
+            System.out.println(" ===> unregister to zk: " + instancePath);
             // quietly 不存在也不报错
             // 删除实例
             client.delete().quietly().forPath(instancePath);
