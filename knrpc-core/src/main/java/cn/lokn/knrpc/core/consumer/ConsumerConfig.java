@@ -5,6 +5,7 @@ import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.cluster.RandomLoadBalancer;
 import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
+import cn.lokn.knrpc.core.registry.ZkRegistryCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -54,9 +55,9 @@ public class ConsumerConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc() {
-        return new RegistryCenter.StaticRegistryCenter(List.of(servers.split(",")));
+        return new ZkRegistryCenter();
     }
 
-    
+
 
 }

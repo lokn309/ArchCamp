@@ -1,5 +1,7 @@
 package cn.lokn.knrpc.core.api;
 
+import cn.lokn.knrpc.core.registry.ChangedListener;
+
 import java.util.List;
 
 public interface RegistryCenter {
@@ -37,8 +39,10 @@ public interface RegistryCenter {
 
     /**
      * consumer 侧
+     *
+     * @param listener 用来修改外部的数据结构
      */
-//    void subscribe();
+    void subscribe(String service, ChangedListener listener);
 
 //        void heartbeat()
 
@@ -73,6 +77,11 @@ public interface RegistryCenter {
         @Override
         public List<String> fetchAll(String service) {
             return providers;
+        }
+
+        @Override
+        public void subscribe(String service, ChangedListener listener) {
+
         }
     }
 }

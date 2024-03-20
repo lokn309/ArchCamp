@@ -5,6 +5,8 @@ import cn.lokn.knrpc.core.api.LoadBalancer;
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.api.RpcContext;
+import cn.lokn.knrpc.core.registry.ChangedListener;
+import cn.lokn.knrpc.core.registry.Event;
 import lombok.Data;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.ApplicationContext;
@@ -15,6 +17,8 @@ import org.springframework.core.env.Environment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @description:
@@ -69,9 +73,23 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     }
 
     private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
-        final String serverName = service.getCanonicalName();
-        final List<String> providers = rc.fetchAll(serverName);
+        String serverName = service.getCanonicalName();
+        final List<String> providers = mapUrl(rc.fetchAll(serverName));
+        System.out.println(" ===> map to providers:");
+        providers.forEach(System.out::println);
+
+        // 订阅 zk 的变化
+        rc.subscribe(serverName, event -> {
+            providers.clear();
+            providers.addAll(mapUrl(event.getData()));
+        });
+
         return createConsumer(service, context, providers);
+    }
+
+    private List<String> mapUrl(List<String> nodes) {
+        return nodes.stream().map(x -> "http://" + x.replace("_", ":"))
+                .collect(Collectors.toList());
     }
 
     private Object createConsumer(Class<?> service, RpcContext context, List<String> providers) {
@@ -79,7 +97,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         return Proxy.newProxyInstance(
                 service.getClassLoader(),
                 new Class[]{service},
-                new KNInvocationHandler(service ,context, providers));
+                new KNInvocationHandler(service, context, providers));
     }
 
     /**
