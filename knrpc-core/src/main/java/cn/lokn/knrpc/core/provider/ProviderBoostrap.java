@@ -41,6 +41,9 @@ public class ProviderBoostrap implements ApplicationContextAware {
      */
     ApplicationContext applicationContext; // 获取所有的bean
 
+    RegistryCenter rc;
+
+
     // 获取所有的provider
     // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
@@ -58,6 +61,7 @@ public class ProviderBoostrap implements ApplicationContextAware {
     public void init() {
         // 获取所有加了自定义 @KNProvider 注解的bean
         final Map<String, Object> providers = applicationContext.getBeansWithAnnotation(KNProvider.class);
+        rc = applicationContext.getBean(RegistryCenter.class);
         providers.forEach((x, y) -> System.out.println(x));
         providers.values().forEach(
                 this::genInterface
@@ -71,24 +75,22 @@ public class ProviderBoostrap implements ApplicationContextAware {
     public void start() {
         String ip = InetAddress.getLocalHost().getHostAddress();
         instance = ip + "_" + port;
+        rc.start();
         skeleton.keySet().forEach(this::registerService);
     }
 
+    private void registerService(String service) {
+        rc.register(service, instance);
+    }
 
     @PreDestroy
     public void stop() {
         skeleton.keySet().forEach(this::unRegisterService);
+        rc.stop();
     }
 
     private void unRegisterService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
         rc.unregister(service, instance);
-    }
-
-
-    private void registerService(String service) {
-        RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
-        rc.register(service, instance);
     }
 
     private void genInterface(Object x) {

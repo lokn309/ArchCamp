@@ -30,6 +30,7 @@ public class ZkRegistryCenter implements RegistryCenter {
                 .build();
         System.out.println(" ===> zk client starting.");
         client.start();
+//        register();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             }
             // 创建实例的临时节点
             String instancePath = servicePath + "/" + instance;
-            System.out.println(" ===> unregister to zk: " + instancePath);
+            System.out.println(" ===> unregister from zk: " + instancePath);
             // quietly 不存在也不报错
             // 删除实例
             client.delete().quietly().forPath(instancePath);
@@ -91,7 +92,7 @@ public class ZkRegistryCenter implements RegistryCenter {
     @SneakyThrows
     @Override
     public void subscribe(String service, ChangedListener listener) {
-        // zk 自己的包
+        // zk 自己的包，作为zk的镜像，用于缓冲zk服务端的数据
         final TreeCache cache = TreeCache.newBuilder(client, "/" + service)
                 .setCacheData(true) // 设置缓存
                 .setMaxDepth(2) // 深度设置为2
