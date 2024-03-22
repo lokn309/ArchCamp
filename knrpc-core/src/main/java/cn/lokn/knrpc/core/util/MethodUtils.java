@@ -1,9 +1,11 @@
 package cn.lokn.knrpc.core.util;
 
+import cn.lokn.knrpc.core.annotation.KNConsumer;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +46,25 @@ public class MethodUtils {
             methodSign.append("_").append(clazz.getName());
         });
         return methodSign.toString();
+    }
+
+    /**
+     * 获取所有带有注解 {@link KNConsumer} 的属性
+     */
+    public static List<Field> findAnnotatedField(Class<?> aClass,
+                                                 Class<? extends Annotation> annotationClass) {
+        List<Field> result = new ArrayList<>();
+        // 注意此处需要获取到父类，所以此处采用 while 循环获取
+        while (aClass != null) {
+            Field[] fields = aClass.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.isAnnotationPresent(annotationClass)) {
+                    result.add(field);
+                }
+            }
+            aClass = aClass.getSuperclass();
+        }
+        return result;
     }
 
 }

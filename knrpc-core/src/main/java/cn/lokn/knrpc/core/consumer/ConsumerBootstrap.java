@@ -7,6 +7,7 @@ import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.registry.ChangedListener;
 import cn.lokn.knrpc.core.registry.Event;
+import cn.lokn.knrpc.core.util.MethodUtils;
 import lombok.Data;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +47,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         final String[] names = applicationContext.getBeanDefinitionNames();
         for (String name : names) {
             final Object bean = applicationContext.getBean(name);
-            List<Field> fields = findAnnotatedField(bean.getClass());
+            List<Field> fields = MethodUtils.findAnnotatedField(bean.getClass(), KNConsumer.class);
 
             fields.forEach(f -> {
                 try {
@@ -98,24 +99,6 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                 service.getClassLoader(),
                 new Class[]{service},
                 new KNInvocationHandler(service, context, providers));
-    }
-
-    /**
-     * 获取所有带有注解 {@link KNConsumer} 的属性
-     */
-    private List<Field> findAnnotatedField(Class<?> aClass) {
-        List<Field> result = new ArrayList<>();
-        // 注意此处需要获取到父类，所以此处采用 while 循环获取
-        while (aClass != null) {
-            Field[] fields = aClass.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.isAnnotationPresent(KNConsumer.class)) {
-                    result.add(field);
-                }
-            }
-            aClass = aClass.getSuperclass();
-        }
-        return result;
     }
 
 }

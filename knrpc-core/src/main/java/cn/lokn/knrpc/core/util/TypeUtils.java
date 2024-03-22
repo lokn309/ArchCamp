@@ -1,9 +1,11 @@
 package cn.lokn.knrpc.core.util;
 
+import cn.lokn.knrpc.core.api.RpcResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +68,24 @@ public class TypeUtils {
             return origin.toString().charAt(0);
         }
         return origin;
-
     }
+
+    public static Object castMethodResult(Method method, Object data) {
+        if (data instanceof JSONObject jsonResult) {
+            return jsonResult.toJavaObject(method.getReturnType());
+        }
+        if (data instanceof JSONArray jsonArray) {
+            Object[] array = jsonArray.toArray();
+            Class<?> componentType = method.getReturnType().getComponentType();
+            final Object resultArray = Array.newInstance(componentType, array.length);
+            for (int i = 0; i < array.length; i++) {
+                Array.set(resultArray, i, array[i]);
+            }
+            return resultArray;
+        }
+        // TODO 待添加 List 和 Map 的处理逻辑
+
+        return TypeUtils.cast(data, method.getReturnType());
+    }
+
 }

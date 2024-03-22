@@ -52,10 +52,6 @@ public class ProviderBoostrap implements ApplicationContextAware {
     @Value("${server.port}")
     private String port;
 
-    /**
-     * 构建获取所有的provider
-     */
-
     @PostConstruct
     public void init() {
         // 获取所有加了自定义 @KNProvider 注解的bean
