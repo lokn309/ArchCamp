@@ -4,6 +4,7 @@ import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.provider.ProviderBoostrap;
 import cn.lokn.knrpc.core.provider.ProviderConfig;
+import cn.lokn.knrpc.core.provider.ProviderInvoker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,12 +26,12 @@ public class KnrpcDemoProviderApplication {
     }
 
     @Autowired
-    ProviderBoostrap providerBoostrap;
+    ProviderInvoker providerInvoker;
 
     // 使用 http + json 来实现序列化和通信
     @RequestMapping("/")
-    public RpcResponse invoke(@RequestBody RpcRequest request) {
-        return providerBoostrap.invoke(request);
+    public RpcResponse<Object> invoke(@RequestBody RpcRequest request) {
+        return providerInvoker.invoke(request);
     }
 
     /**
@@ -47,14 +48,14 @@ public class KnrpcDemoProviderApplication {
             request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
-            final RpcResponse userRpcResponse = providerBoostrap.invoke(request);
+            final RpcResponse userRpcResponse = providerInvoker.invoke(request);
             System.out.println("user return : " + userRpcResponse.getData());
 
             // test 2 parameters method
             request.setService("cn.lokn.knrpc.demo.api.UserService");
             request.setMethodSign("findById@2_int_java.lang.String");
             request.setArgs(new Object[]{10, "kn"});
-            final RpcResponse user = providerBoostrap.invoke(request);
+            final RpcResponse user = providerInvoker.invoke(request);
             System.out.println("user return : " + user.getData());
 
         };

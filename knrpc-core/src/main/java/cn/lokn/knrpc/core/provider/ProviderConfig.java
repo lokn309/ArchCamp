@@ -25,6 +25,11 @@ public class ProviderConfig {
     }
 
     @Bean
+    ProviderInvoker providerInvoker(@Autowired ProviderBoostrap providerBoostrap) {
+        return new ProviderInvoker(providerBoostrap);
+    }
+
+    @Bean
     // 此处需要添加 Order 因为 ApplicationRunner 加载是有顺序的
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ProviderBoostrap providerBoostrap) {

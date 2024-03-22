@@ -43,7 +43,6 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     RegistryCenter rc;
 
-
     // 获取所有的provider
     // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
@@ -112,47 +111,6 @@ public class ProviderBoostrap implements ApplicationContextAware {
         meta.setMethodSign(MethodUtils.methodSign(method));
         System.out.println(" create a provider : " + meta);
         skeleton.add(itfer.getCanonicalName(), meta);
-    }
-
-    public RpcResponse invoke(RpcRequest request) {
-        if (MethodUtils.checkLocalMethod(request.getMethodSign())) {
-            return null;
-        }
-        List<ProviderMeta> providerMetas = skeleton.get(request.getService());
-        RpcResponse rpcResponse = new RpcResponse();
-        try {
-            ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
-            Method method = meta.getMethod();
-            Object[] args = processArgs(request.getArgs(), method.getParameterTypes());
-            final Object result = method.invoke(meta.getServiceImpl(), args);
-            rpcResponse.setStatus(true);
-            rpcResponse.setData(result);
-            return rpcResponse;
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getTargetException().getMessage()));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
-        } catch (Exception e) {
-            e.printStackTrace();
-            rpcResponse.setEx(new RuntimeException(e.getMessage()));
-        }
-        return rpcResponse;
-    }
-
-    private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {
-        if (args == null || args.length == 0) return args;
-        Object[] result = new Object[args.length];
-        for (int i = 0; i < args.length; i++) {
-            result[i] = TypeUtils.cast(args[i], parameterTypes[i]);
-        }
-        return result;
-    }
-
-    private ProviderMeta findProviderMeta(List<ProviderMeta> providerMetas, String methodSign) {
-        final Optional<ProviderMeta> result = providerMetas.stream().filter(meta -> meta.getMethodSign().equals(methodSign)).findFirst();
-        return result.orElse(null);
     }
 
 }
