@@ -7,6 +7,7 @@ import cn.lokn.knrpc.core.consumer.http.OkHttpInvoker;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.util.TypeUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -18,6 +19,7 @@ import java.util.List;
  * @author: lokn
  * @date: 2024/03/10 23:03
  */
+@Slf4j
 public class KNInvocationHandler implements InvocationHandler {
 
     Class<?> service;
@@ -45,7 +47,7 @@ public class KNInvocationHandler implements InvocationHandler {
 
         final List<InstanceMeta> nodes = context.getRouter().route(providers);
         InstanceMeta instance = context.getLoadBalancer().choose(nodes);
-        System.out.println("loadBalancer.choose(urls) == " + instance);
+        log.info("loadBalancer.choose(urls) == " + instance);
         RpcResponse<?> rpcResponse = httpInvoker.post(request, instance.getUrl());
 
         if (rpcResponse.isStatus()) {

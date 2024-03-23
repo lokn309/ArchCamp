@@ -9,6 +9,7 @@ import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @date: 2024/03/10 19:47
  */
 @Data
+@Slf4j
 public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAware {
 
     ApplicationContext applicationContext;
@@ -88,7 +90,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                 .app(app).namespace(namespace).env(env).name(service.getCanonicalName())
                 .build();
         final List<InstanceMeta> providers = rc.fetchAll(serviceMeta);
-        System.out.println(" ===> map to providers:");
+        log.info(" ===> map to providers:");
         providers.forEach(System.out::println);
 
         // 订阅 zk 的变化

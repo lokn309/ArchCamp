@@ -6,6 +6,7 @@ import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
@@ -18,6 +19,7 @@ import org.springframework.core.annotation.Order;
  * @author: lokn
  * @date: 2024/03/10 19:49
  */
+@Slf4j
 @Configuration
 public class ConsumerConfig {
 
@@ -34,9 +36,9 @@ public class ConsumerConfig {
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
-            System.out.println(" ===> consumerBootstrap starting....");
+            log.info(" ===> consumerBootstrap starting....");
             consumerBootstrap.start();
-            System.out.println(" ===> consumerBootstrap started....");
+            log.info(" ===> consumerBootstrap started....");
         };
     }
 

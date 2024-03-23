@@ -10,6 +10,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @date: 2024/03/07 23:27
  */
 @Data
+@Slf4j
 public class ProviderBoostrap implements ApplicationContextAware {
 
     /**
@@ -61,7 +63,7 @@ public class ProviderBoostrap implements ApplicationContextAware {
         // 获取所有加了自定义 @KNProvider 注解的bean
         final Map<String, Object> providers = applicationContext.getBeansWithAnnotation(KNProvider.class);
         rc = applicationContext.getBean(RegistryCenter.class);
-        providers.forEach((x, y) -> System.out.println(x));
+        providers.forEach((x, y) -> log.info(x));
         providers.values().forEach(this::genInterface);
     }
 
@@ -117,7 +119,7 @@ public class ProviderBoostrap implements ApplicationContextAware {
         providerMeta.setMethod(method);
         providerMeta.setServiceImpl(impl);
         providerMeta.setMethodSign(MethodUtils.methodSign(method));
-        System.out.println(" create a provider : " + providerMeta);
+        log.info(" create a provider : " + providerMeta);
         skeleton.add(service.getCanonicalName(), providerMeta);
     }
 

@@ -2,6 +2,7 @@ package cn.lokn.knrpc.core.provider;
 
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -13,6 +14,7 @@ import org.springframework.core.annotation.Order;
  * @author: lokn
  * @date: 2024/03/07 23:42
  */
+@Slf4j
 @Configuration
 public class ProviderConfig {
 
@@ -31,9 +33,9 @@ public class ProviderConfig {
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ProviderBoostrap providerBoostrap) {
         return x -> {
-            System.out.println(" ===> providerBoostrap starting....");
+            log.info(" ===> providerBoostrap starting....");
             providerBoostrap.start();
-            System.out.println(" ===> providerBoostrap started....");
+            log.info(" ===> providerBoostrap started....");
         };
     }
 
