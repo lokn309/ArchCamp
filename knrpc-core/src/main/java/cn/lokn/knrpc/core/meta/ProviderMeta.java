@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.meta;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.lang.reflect.Method;
@@ -10,6 +11,7 @@ import java.lang.reflect.Method;
  * @date: 2024/03/13 20:18
  */
 @Data
+@Builder
 public class ProviderMeta {
 
     Method method;

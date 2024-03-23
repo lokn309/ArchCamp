@@ -3,17 +3,15 @@ package cn.lokn.knrpc.core.consumer;
 import cn.lokn.knrpc.core.api.LoadBalancer;
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
-import cn.lokn.knrpc.core.cluster.RandomLoadBalancer;
 import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
-import cn.lokn.knrpc.core.registry.ZkRegistryCenter;
+import cn.lokn.knrpc.core.meta.InstanceMeta;
+import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
-import java.util.List;
 
 /**
  * @description:
@@ -43,7 +41,7 @@ public class ConsumerConfig {
     }
 
     @Bean
-    public LoadBalancer loadBalancer() {
+    public LoadBalancer<InstanceMeta> loadBalancer() {
 //        return LoadBalancer.Default;
         return new RoundRibonLoadBalancer();
     }
@@ -57,7 +55,5 @@ public class ConsumerConfig {
     public RegistryCenter consumer_rc() {
         return new ZkRegistryCenter();
     }
-
-
 
 }

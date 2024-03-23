@@ -3,6 +3,8 @@ server:
 
 knrpc:
   providers: http://localhost:8081/,http://localhost:8082/,http://localhost:8083/
+  zkService: localhost:2181
+  zkRoot: knrpc
 
 app:
   id: app1

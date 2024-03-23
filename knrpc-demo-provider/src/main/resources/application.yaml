@@ -1,6 +1,10 @@
 server:
   port: 8081
 
+knrpc:
+  zkService: localhost:2181
+  zkRoot: knrpc
+
 app:
   id: app1
   namespace: public

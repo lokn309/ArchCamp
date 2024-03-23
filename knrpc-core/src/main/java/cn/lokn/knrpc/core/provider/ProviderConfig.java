@@ -1,15 +1,12 @@
 package cn.lokn.knrpc.core.provider;
 
 import cn.lokn.knrpc.core.api.RegistryCenter;
-import cn.lokn.knrpc.core.consumer.ConsumerBootstrap;
-import cn.lokn.knrpc.core.registry.ZkRegistryCenter;
+import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-
-import java.util.List;
 
 /**
  * @description:
