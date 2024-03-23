@@ -1,14 +1,13 @@
 package cn.lokn.knrpc.core.util;
 
-import cn.lokn.knrpc.core.api.RpcResponse;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * @description:
@@ -18,9 +17,8 @@ import java.util.List;
 public class TypeUtils {
 
     /**
-     *
-     * @param origin    返回结果
-     * @param type      返回值类型
+     * @param origin 返回结果
+     * @param type   返回值类型
      * @return
      */
     public static Object cast(Object origin, Class<?> type) {
@@ -35,17 +33,27 @@ public class TypeUtils {
             }
             int length = Array.getLength(origin);
             Class<?> componentType = type.getComponentType();
-            Object array = Array.newInstance(componentType, length);
+            Object resultArray = Array.newInstance(componentType, length);
             for (int i = 0; i < length; i++) {
-                // TODO 待添加原生类型 和 jdk自身类型处理
-                Array.set(array, i, Array.get(origin, i));
+                // 处理原生类型 和 jdk自身类型处理
+                if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                    Array.set(resultArray, i, Array.get(origin, i));
+                } else {
+                    final Object castObject = cast(Array.get(origin, i), componentType);
+                    Array.set(resultArray, i, castObject);
+                }
             }
-            return array;
+            return resultArray;
         }
         if (origin instanceof HashMap map) {
             JSONObject jsonObject = new JSONObject(map);
             return jsonObject.toJavaObject(type);
         }
+
+        if (origin instanceof JSONObject jsonObject) {
+            return jsonObject.toJavaObject(type);
+        }
+
         if (type.equals(Integer.class) || type.equals(Integer.TYPE)) {
             return Integer.valueOf(origin.toString());
         }
@@ -70,22 +78,67 @@ public class TypeUtils {
         return origin;
     }
 
+    /**
+     * 方法返回结果值转化处理
+     *
+     * @param method
+     * @param data
+     * @return
+     */
     public static Object castMethodResult(Method method, Object data) {
+        final Class<?> type = method.getReturnType();
+        System.out.println("method.getReturnType() = " + type);
         if (data instanceof JSONObject jsonResult) {
-            return jsonResult.toJavaObject(method.getReturnType());
+            // Map 类型结果处理
+            if (Map.class.isAssignableFrom(type)) {
+                Map resultMap = new HashMap();
+                final Type genericReturnType = method.getGenericReturnType();
+                System.out.println("genericReturnType = " + genericReturnType);
+                if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                    final Class<?> keyType = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+                    final Class<?> valueType = (Class<?>) parameterizedType.getActualTypeArguments()[1];
+                    System.out.println("keyType   : " + keyType);
+                    System.out.println("valueType : " + valueType);
+                    jsonResult.entrySet().stream().forEach(
+                            e -> {
+                                final Object key = cast(e.getKey(), keyType);
+                                final Object value = cast(e.getValue(), valueType);
+                                resultMap.put(key, value);
+                            }
+                    );
+                }
+                return resultMap;
+            }
+            return jsonResult.toJavaObject(type);
         }
         if (data instanceof JSONArray jsonArray) {
             Object[] array = jsonArray.toArray();
-            Class<?> componentType = method.getReturnType().getComponentType();
-            final Object resultArray = Array.newInstance(componentType, array.length);
-            for (int i = 0; i < array.length; i++) {
-                Array.set(resultArray, i, array[i]);
+            if (type.isArray()) {
+                Class<?> componentType = method.getReturnType().getComponentType();
+                final Object resultArray = Array.newInstance(componentType, array.length);
+                for (int i = 0; i < array.length; i++) {
+                    Array.set(resultArray, i, array[i]);
+                }
+                return resultArray;
+            } else if (List.class.isAssignableFrom(type)) {
+                List<Object> resultList = new ArrayList<>(array.length);
+                final Type genericReturnType = method.getGenericReturnType();
+                System.out.println(genericReturnType);
+                if (genericReturnType instanceof ParameterizedType parameterizedType) {
+                    final Type actualType = parameterizedType.getActualTypeArguments()[0];
+                    System.out.println(actualType);
+                    for (Object o : array) {
+                        resultList.add(cast(o, (Class<?>) actualType));
+                    }
+                } else {
+                    resultList.addAll(Arrays.asList(array));
+                }
+                return resultList;
+            } else {
+                return null;
             }
-            return resultArray;
         }
-        // TODO 待添加 List 和 Map 的处理逻辑
-
-        return TypeUtils.cast(data, method.getReturnType());
+        return cast(data, method.getReturnType());
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description: 服务提供者的实现
@@ -40,8 +41,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int getId(User user) {
+    public long getId(User user) {
         return user.getId();
+    }
+
+    @Override
+    public long getId(float id) {
+        return 1L;
     }
 
     @Override
@@ -65,14 +71,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public long[] getLongIds() {
-        return new long[]{1L, 3L, 5L};
+    public User[] findUsers(User[] users) {
+        return users;
     }
 
     @Override
-    public List<User> getLists() {
-        return new ArrayList<>();
+    public List<User> getList(List<User> userList) {
+        return userList;
     }
 
+    @Override
+    public Map<String, User> getMap(Map<String, User> userMap) {
+        return userMap;
+    }
+
+    @Override
+    public Boolean getFlag(boolean flag) {
+        return flag;
+    }
+
+    @Override
+    public User findById(long id) {
+        return new User(Long.valueOf(id).intValue(), "kn");
+    }
+
+    @Override
+    public User ex(boolean flag) {
+        return new User(45, "kn+" + false);
+    }
+
+    @Override
+    public long[] getLongIds() {
+        return new long[]{1L, 3L, 5L};
+    }
 
 }
