@@ -2,6 +2,7 @@ package cn.lokn.knrpc.core.registry;
 
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
+import cn.lokn.knrpc.core.meta.ServiceMeta;
 import lombok.SneakyThrows;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -42,8 +43,8 @@ public class ZkRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void register(String service, InstanceMeta instance) {
-        String servicePath = "/" + service;
+    public void register(ServiceMeta service, InstanceMeta instance) {
+        String servicePath = "/" + service.toPath();
         try {
             if (client.checkExists().forPath(servicePath) == null) {
                 // 创建服务的持久化节点。 "service".getBytes() 是便于调试用，没有什么实际意义
@@ -59,8 +60,8 @@ public class ZkRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void unregister(String service, InstanceMeta instance) {
-        String servicePath = "/" + service;
+    public void unregister(ServiceMeta service, InstanceMeta instance) {
+        String servicePath = "/" + service.toPath();
         try {
             // 判断服务是否存在
             if (client.checkExists().forPath(servicePath) == null) {
@@ -78,8 +79,8 @@ public class ZkRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public List<InstanceMeta> fetchAll(String service) {
-        String servicePath = "/" + service;
+    public List<InstanceMeta> fetchAll(ServiceMeta service) {
+        String servicePath = "/" + service.toPath();
         try {
             // 获取所有子节点
             final List<String> nodes = client.getChildren().forPath(servicePath);
@@ -102,9 +103,9 @@ public class ZkRegistryCenter implements RegistryCenter {
 
     @SneakyThrows
     @Override
-    public void subscribe(String service, ChangedListener listener) {
+    public void subscribe(ServiceMeta service, ChangedListener listener) {
         // zk 自己的包，作为zk的镜像，用于缓冲zk服务端的数据
-        final TreeCache cache = TreeCache.newBuilder(client, "/" + service)
+        final TreeCache cache = TreeCache.newBuilder(client, "/" + service.toPath())
                 .setCacheData(true) // 设置缓存
                 .setMaxDepth(2) // 深度设置为2
                 .build();

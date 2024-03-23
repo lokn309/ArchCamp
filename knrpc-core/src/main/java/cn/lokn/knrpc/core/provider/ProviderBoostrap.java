@@ -4,6 +4,7 @@ import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
+import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -45,6 +46,16 @@ public class ProviderBoostrap implements ApplicationContextAware {
     @Value("${server.port}")
     private String port;
 
+    @Value("${app.id}")
+    private String app;
+
+    @Value("${app.namespace}")
+    private String namespace;
+
+    @Value("${app.env}")
+    private String env;
+
+
     @PostConstruct
     public void init() {
         // 获取所有加了自定义 @KNProvider 注解的bean
@@ -68,7 +79,10 @@ public class ProviderBoostrap implements ApplicationContextAware {
     }
 
     private void registerService(String service) {
-        rc.register(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder()
+                .name(service).app(app).namespace(namespace).env(env)
+                .build();
+        rc.register(serviceMeta, instance);
     }
 
     @PreDestroy
@@ -78,7 +92,10 @@ public class ProviderBoostrap implements ApplicationContextAware {
     }
 
     private void unRegisterService(String service) {
-        rc.unregister(service, instance);
+        ServiceMeta serviceMeta = ServiceMeta.builder()
+                .name(service).app(app).namespace(namespace).env(env)
+                .build();
+        rc.unregister(serviceMeta, instance);
     }
 
     private void genInterface(Object x) {

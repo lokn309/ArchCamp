@@ -1,6 +1,7 @@
 package cn.lokn.knrpc.core.api;
 
 import cn.lokn.knrpc.core.meta.InstanceMeta;
+import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.registry.ChangedListener;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface RegistryCenter {
      * @param service
      * @param instance
      */
-    void register(String service, InstanceMeta instance);
+    void register(ServiceMeta service, InstanceMeta instance);
 
     /**
      * provider 使用
@@ -31,19 +32,19 @@ public interface RegistryCenter {
      * @param service
      * @param instance
      */
-    void unregister(String service, InstanceMeta instance);
+    void unregister(ServiceMeta service, InstanceMeta instance);
 
     /**
      * consumer 侧
      */
-    List<InstanceMeta> fetchAll(String service);
+    List<InstanceMeta> fetchAll(ServiceMeta service);
 
     /**
      * consumer 侧
      *
      * @param listener 用来修改外部的数据结构
      */
-    void subscribe(String service, ChangedListener listener);
+    void subscribe(ServiceMeta service, ChangedListener listener);
 
 //        void heartbeat()
 
@@ -66,22 +67,22 @@ public interface RegistryCenter {
         }
 
         @Override
-        public void register(String service, InstanceMeta instance) {
+        public void register(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public void unregister(String service, InstanceMeta instance) {
+        public void unregister(ServiceMeta service, InstanceMeta instance) {
 
         }
 
         @Override
-        public List<InstanceMeta> fetchAll(String service) {
+        public List<InstanceMeta> fetchAll(ServiceMeta service) {
             return providers;
         }
 
         @Override
-        public void subscribe(String service, ChangedListener listener) {
+        public void subscribe(ServiceMeta service, ChangedListener listener) {
 
         }
     }
