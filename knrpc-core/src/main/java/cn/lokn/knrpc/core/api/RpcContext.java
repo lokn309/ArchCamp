@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.api;
 
+import cn.lokn.knrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
 import java.util.List;
@@ -14,8 +15,8 @@ public class RpcContext {
 
     List<Filter> filters; // todo
 
-    Router router;
+    Router<InstanceMeta> router;
 
-    LoadBalancer loadBalancer;
+    LoadBalancer<InstanceMeta> loadBalancer;
 
 }

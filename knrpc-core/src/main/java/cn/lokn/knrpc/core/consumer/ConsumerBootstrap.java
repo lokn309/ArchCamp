@@ -5,6 +5,7 @@ import cn.lokn.knrpc.core.api.LoadBalancer;
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.api.RpcContext;
+import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -57,6 +58,7 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                     if (consumer == null) {
                         // 创建代理对象
                         consumer = createFromRegistry(service, context, rc);
+                        stub.put(serviceName, consumer);
                     }
                     // 可见行变为true，不然反射时，会失败
                     f.setAccessible(true);
@@ -73,25 +75,20 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
 
     private Object createFromRegistry(Class<?> service, RpcContext context, RegistryCenter rc) {
         String serverName = service.getCanonicalName();
-        final List<String> providers = mapUrl(rc.fetchAll(serverName));
+        final List<InstanceMeta> providers = rc.fetchAll(serverName);
         System.out.println(" ===> map to providers:");
         providers.forEach(System.out::println);
 
         // 订阅 zk 的变化
         rc.subscribe(serverName, event -> {
             providers.clear();
-            providers.addAll(mapUrl(event.getData()));
+            providers.addAll(event.getData());
         });
 
         return createConsumer(service, context, providers);
     }
 
-    private List<String> mapUrl(List<String> nodes) {
-        return nodes.stream().map(x -> "http://" + x.replace("_", ":"))
-                .collect(Collectors.toList());
-    }
-
-    private Object createConsumer(Class<?> service, RpcContext context, List<String> providers) {
+    private Object createConsumer(Class<?> service, RpcContext context, List<InstanceMeta> providers) {
         // 动态代理实现
         return Proxy.newProxyInstance(
                 service.getClassLoader(),

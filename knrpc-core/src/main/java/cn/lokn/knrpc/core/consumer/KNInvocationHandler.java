@@ -4,6 +4,7 @@ import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.consumer.http.OkHttpInvoker;
+import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.util.TypeUtils;
 
@@ -21,11 +22,11 @@ public class KNInvocationHandler implements InvocationHandler {
 
     Class<?> service;
     RpcContext context;
-    List<String> providers;
+    List<InstanceMeta> providers;
 
     HttpInvoker httpInvoker = new OkHttpInvoker();
 
-    public KNInvocationHandler(Class<?> service, RpcContext context, List<String> providers) {
+    public KNInvocationHandler(Class<?> service, RpcContext context, List<InstanceMeta> providers) {
         this.service = service;
         this.context = context;
         this.providers = providers;
@@ -42,10 +43,10 @@ public class KNInvocationHandler implements InvocationHandler {
         request.setMethodSign(MethodUtils.methodSign(method));
         request.setArgs(args);
 
-        final List<String> urls = context.getRouter().route(providers);
-        final String url = (String) context.getLoadBalancer().choose(urls);
-        System.out.println("loadBalancer.choose(urls) == " + url);
-        RpcResponse<?> rpcResponse = httpInvoker.post(request, url);
+        final List<InstanceMeta> nodes = context.getRouter().route(providers);
+        InstanceMeta instance = context.getLoadBalancer().choose(nodes);
+        System.out.println("loadBalancer.choose(urls) == " + instance);
+        RpcResponse<?> rpcResponse = httpInvoker.post(request, instance.getUrl());
 
         if (rpcResponse.isStatus()) {
             final Object data = rpcResponse.getData();

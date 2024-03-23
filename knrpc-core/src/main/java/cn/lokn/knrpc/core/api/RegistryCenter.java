@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.api;
 
+import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.registry.ChangedListener;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface RegistryCenter {
      * @param service
      * @param instance
      */
-    void register(String service, String instance);
+    void register(String service, InstanceMeta instance);
 
     /**
      * provider 使用
@@ -30,12 +31,12 @@ public interface RegistryCenter {
      * @param service
      * @param instance
      */
-    void unregister(String service, String instance);
+    void unregister(String service, InstanceMeta instance);
 
     /**
      * consumer 侧
      */
-    List<String> fetchAll(String service);
+    List<InstanceMeta> fetchAll(String service);
 
     /**
      * consumer 侧
@@ -48,9 +49,9 @@ public interface RegistryCenter {
 
     class StaticRegistryCenter implements RegistryCenter {
 
-        List<String> providers;
+        List<InstanceMeta> providers;
 
-        public StaticRegistryCenter(List<String> providers) {
+        public StaticRegistryCenter(List<InstanceMeta> providers) {
             this.providers = providers;
         }
 
@@ -65,17 +66,17 @@ public interface RegistryCenter {
         }
 
         @Override
-        public void register(String service, String instance) {
+        public void register(String service, InstanceMeta instance) {
 
         }
 
         @Override
-        public void unregister(String service, String instance) {
+        public void unregister(String service, InstanceMeta instance) {
 
         }
 
         @Override
-        public List<String> fetchAll(String service) {
+        public List<InstanceMeta> fetchAll(String service) {
             return providers;
         }
 
