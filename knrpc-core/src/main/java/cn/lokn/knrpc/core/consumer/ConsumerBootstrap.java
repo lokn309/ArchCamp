@@ -1,10 +1,7 @@
 package cn.lokn.knrpc.core.consumer;
 
 import cn.lokn.knrpc.core.annotation.KNConsumer;
-import cn.lokn.knrpc.core.api.LoadBalancer;
-import cn.lokn.knrpc.core.api.RegistryCenter;
-import cn.lokn.knrpc.core.api.Router;
-import cn.lokn.knrpc.core.api.RpcContext;
+import cn.lokn.knrpc.core.api.*;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
@@ -49,10 +46,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
         RegistryCenter rc = applicationContext.getBean(RegistryCenter.class);
+        List<Filter> filters = applicationContext.getBeansOfType(Filter.class).values().stream().toList();
 
         RpcContext context = new RpcContext();
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
+        context.setFilters(filters);
 
         // 这里有一个技巧，利用 applicationRunner 让所有的 Bean 初始化完后，在进行 Bean 实例的获取
         final String[] names = applicationContext.getBeanDefinitionNames();

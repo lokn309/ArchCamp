@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.consumer;
 
+import cn.lokn.knrpc.core.api.Filter;
 import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
@@ -45,11 +46,31 @@ public class KNInvocationHandler implements InvocationHandler {
         request.setMethodSign(MethodUtils.methodSign(method));
         request.setArgs(args);
 
+        for (Filter filter : this.context.getFilters()) {
+            // 本地缓存
+            final Object cacheResult = filter.prefilter(request);
+            if (cacheResult != null) {
+                log.info("{} ===> prefilter: {}", request, cacheResult);
+                return cacheResult;
+            }
+        }
+
         final List<InstanceMeta> nodes = context.getRouter().route(providers);
         InstanceMeta instance = context.getLoadBalancer().choose(nodes);
         log.info("loadBalancer.choose(urls) == " + instance);
         RpcResponse<?> rpcResponse = httpInvoker.post(request, instance.getUrl());
+        final Object result = castReturnResult(method, rpcResponse);
 
+        for (Filter filter : this.context.getFilters()) {
+            Object filterResult = filter.postfilter(request, rpcResponse, result);
+            if (filterResult != null) {
+                return filterResult;
+            }
+        }
+        return result;
+    }
+
+    private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
         if (rpcResponse.isStatus()) {
             final Object data = rpcResponse.getData();
             return TypeUtils.castMethodResult(method, data);
