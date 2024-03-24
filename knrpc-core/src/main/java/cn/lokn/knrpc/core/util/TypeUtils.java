@@ -119,7 +119,12 @@ public class TypeUtils {
                 Class<?> componentType = method.getReturnType().getComponentType();
                 final Object resultArray = Array.newInstance(componentType, array.length);
                 for (int i = 0; i < array.length; i++) {
-                    Array.set(resultArray, i, array[i]);
+                    if (componentType.isPrimitive() || componentType.getPackageName().startsWith("java")) {
+                        Array.set(resultArray, i, array[i]);
+                    } else {
+                        final Object cast = cast(array[i], componentType);
+                        Array.set(resultArray, i, cast);
+                    }
                 }
                 return resultArray;
             } else if (List.class.isAssignableFrom(type)) {
