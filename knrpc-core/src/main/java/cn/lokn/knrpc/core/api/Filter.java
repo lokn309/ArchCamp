@@ -13,6 +13,11 @@ public interface Filter {
 
     Object postfilter(RpcRequest request, RpcResponse response, Object result);
 
+    // 挡板排查问题 Mock 方法
+    // A -> B -> C 有问题
+    // - -> - -> D 还有问题
+    // - -> D
+
     Filter Default = new Filter() {
         @Override
         public RpcResponse prefilter(RpcRequest request) {
