@@ -39,8 +39,10 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     RegistryCenter rc;
 
-    // 获取所有的provider
-    // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
+    /**
+     * 获取所有的provider
+     * 统一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数，提升性能
+     */
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
     private InstanceMeta instance;
@@ -65,6 +67,42 @@ public class ProviderBoostrap implements ApplicationContextAware {
         rc = applicationContext.getBean(RegistryCenter.class);
         providers.forEach((x, y) -> log.info(x));
         providers.values().forEach(this::genInterface);
+    }
+
+    /**
+     * 获取所有标注了 {@link KNProvider}  实现类的接口元数据信息，
+     * 并将构建的接口元数据信息 {@link ProviderMeta} 保存到 skeleton 桩子中
+     *
+     * @param impl 标注 {@link KNProvider} 注解的实现类
+     */
+    private void genInterface(Object impl) {
+        Arrays.stream(impl.getClass().getInterfaces()).forEach(service -> {
+            final Method[] methods = service.getMethods();
+            for (Method method : methods) {
+                // 排除 Object 类中的方法。eg： toString() etc.
+                if (MethodUtils.checkLocalMethod(method)) {
+                    continue;
+                }
+                createProvider(service, impl, method);
+            }
+        });
+    }
+
+    /**
+     * 构建生产者元数据信息 {@link ProviderMeta}，并将生产者元数据保存到 skeleton 桩子中
+     *
+     * @param service   接口全限定路径
+     * @param impl      实现类对象
+     * @param method    方法
+     */
+    private void createProvider(Class<?> service, Object impl, Method method) {
+        ProviderMeta providerMeta = ProviderMeta.builder()
+                .serviceImpl(impl)
+                .method(method)
+                .methodSign(MethodUtils.methodSign(method))
+                .build();
+        log.info(" create a provider : " + providerMeta);
+        skeleton.add(service.getCanonicalName(), providerMeta);
     }
 
     /**
@@ -96,31 +134,6 @@ public class ProviderBoostrap implements ApplicationContextAware {
                 .name(service).app(app).namespace(namespace).env(env)
                 .build();
         rc.unregister(serviceMeta, instance);
-    }
-
-    private void genInterface(Object impl) {
-        Arrays.stream(impl.getClass().getInterfaces()).forEach(service -> {
-            final Method[] methods = service.getMethods();
-            for (Method method : methods) {
-                if (MethodUtils.checkLocalMethod(method)) {
-                    continue;
-                }
-                createProvider(service, impl, method);
-            }
-        });
-    }
-
-    private void createProvider(Class<?> service, Object impl, Method method) {
-        ProviderMeta providerMeta = ProviderMeta.builder()
-                .serviceImpl(impl)
-                .method(method)
-                .methodSign(MethodUtils.methodSign(method))
-                .build();
-        providerMeta.setMethod(method);
-        providerMeta.setServiceImpl(impl);
-        providerMeta.setMethodSign(MethodUtils.methodSign(method));
-        log.info(" create a provider : " + providerMeta);
-        skeleton.add(service.getCanonicalName(), providerMeta);
     }
 
 }
