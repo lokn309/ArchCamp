@@ -35,7 +35,7 @@ public class ConsumerConfig {
     // 这里有一个技巧，当spring 容器启动完后，在进行服务的获取
     @Bean
     // 此处需要添加 Order 因为 ApplicationRunner 加载是有顺序的
-    @Order(Integer.MIN_VALUE)
+    @Order(Integer.MIN_VALUE + 1)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ConsumerBootstrap consumerBootstrap) {
         return x -> {
             log.info(" ===> consumerBootstrap starting....");

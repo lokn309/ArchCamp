@@ -1,0 +1,16 @@
+server:
+  port: 8090
+
+knrpc:
+  providers: http://localhost:8081,http://localhost:8082,http://localhost:8083
+  zkService: localhost:2182
+  zkRoot: knrpc
+
+app:
+  id: app1
+  namespace: public
+  env: dev
+logging:
+  level:
+    root: info
+    cn.lokn.knrpc: debug
