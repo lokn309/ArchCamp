@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @description:
+ * @description: OKHttp invoker
  * @author: lokn
  * @date: 2024/03/23 00:10
  */
@@ -46,7 +46,6 @@ public class OkHttpInvoker implements HttpInvoker {
             final RpcResponse<Object> rpcResponse = JSON.parseObject(respJson, RpcResponse.class);
             return rpcResponse;
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
