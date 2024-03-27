@@ -1,9 +1,6 @@
 package cn.lokn.knrpc.core.consumer;
 
-import cn.lokn.knrpc.core.api.Filter;
-import cn.lokn.knrpc.core.api.RpcContext;
-import cn.lokn.knrpc.core.api.RpcRequest;
-import cn.lokn.knrpc.core.api.RpcResponse;
+import cn.lokn.knrpc.core.api.*;
 import cn.lokn.knrpc.core.consumer.http.OkHttpInvoker;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
@@ -72,11 +69,9 @@ public class KNInvocationHandler implements InvocationHandler {
 
     private static Object castReturnResult(Method method, RpcResponse<?> rpcResponse) {
         if (rpcResponse.isStatus()) {
-            final Object data = rpcResponse.getData();
-            return TypeUtils.castMethodResult(method, data);
+            return TypeUtils.castMethodResult(method, rpcResponse.getData());
         } else {
-            final Exception ex = rpcResponse.getEx();
-            throw new RuntimeException(ex);
+            throw new RpcException(rpcResponse.getEx());
         }
     }
 

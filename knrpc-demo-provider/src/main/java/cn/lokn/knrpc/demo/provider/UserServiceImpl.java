@@ -97,6 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User ex(boolean flag) {
+        if (flag) throw new RuntimeException("just throw an exception");
         return new User(45, "kn+" + false);
     }
 
