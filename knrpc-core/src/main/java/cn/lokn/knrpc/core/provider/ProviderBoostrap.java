@@ -116,9 +116,17 @@ public class ProviderBoostrap implements ApplicationContextAware {
         skeleton.keySet().forEach(this::registerService);
     }
 
+    /**
+     * 向 zk 注册生产者信息
+     *
+     * @param service 生产者信息
+     */
     private void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .name(service).app(app).namespace(namespace).env(env)
+                .name(service)
+                .app(app)
+                .namespace(namespace)
+                .env(env)
                 .build();
         rc.register(serviceMeta, instance);
     }

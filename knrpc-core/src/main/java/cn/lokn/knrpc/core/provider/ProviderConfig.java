@@ -28,14 +28,22 @@ public class ProviderConfig {
         return new ProviderInvoker(providerBoostrap);
     }
 
+    /**
+     * 使用 {@link ApplicationRunner} 是为了延迟注册，目的是为了在 spring 容器启动完成后，
+     * 将 skeleton 中的生产者信息，注册到 zk 中。
+     *
+     * 此处需要添加 Order 因为 ApplicationRunner 加载是有顺序的
+     *
+     * @param providerBoostrap 生产者启动Bean
+     * @return
+     */
     @Bean
-    // 此处需要添加 Order 因为 ApplicationRunner 加载是有顺序的
     @Order(Integer.MIN_VALUE)
     public ApplicationRunner consumerBootstrap_runner(@Autowired ProviderBoostrap providerBoostrap) {
         return x -> {
             log.info(" ===> providerBoostrap starting....");
             providerBoostrap.start();
-            log.info(" ===> providerBoostrap started....");
+            log.info(" ===> providerBoostrap started.");
         };
     }
 
