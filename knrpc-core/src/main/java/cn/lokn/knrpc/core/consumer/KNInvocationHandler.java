@@ -71,7 +71,11 @@ public class KNInvocationHandler implements InvocationHandler {
         if (rpcResponse.isStatus()) {
             return TypeUtils.castMethodResult(method, rpcResponse.getData());
         } else {
-            throw new RpcException(rpcResponse.getEx(), RpcException.NoSuchMethodEx);
+            Exception responseEx = rpcResponse.getEx();
+            if (responseEx instanceof RpcException ex) {
+                throw ex;
+            }
+            throw new RpcException(responseEx, RpcException.NoSuchMethodEx);
         }
     }
 

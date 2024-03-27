@@ -1,6 +1,7 @@
 package cn.lokn.knrpc.core.registry.zk;
 
 import cn.lokn.knrpc.core.api.RegistryCenter;
+import cn.lokn.knrpc.core.api.RpcException;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.registry.ChangedListener;
@@ -66,7 +67,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             log.info(" ===> register to zk: " + instancePath);
             client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -85,7 +86,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 删除实例
             client.delete().quietly().forPath(instancePath);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RpcException(e);
         }
     }
 
@@ -100,7 +101,7 @@ public class ZkRegistryCenter implements RegistryCenter {
 
             return mapInstance(nodes);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RpcException(e);
         }
     }
 
