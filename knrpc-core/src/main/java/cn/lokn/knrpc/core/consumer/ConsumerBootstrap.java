@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
+import javax.swing.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
@@ -42,6 +43,12 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
     @Value("${app.env}")
     private String env;
 
+    @Value("${app.reties}")
+    private int reties;
+
+    @Value("${app.timeout}")
+    private int timeout;
+
     public void start() {
         Router<InstanceMeta> router = applicationContext.getBean(Router.class);
         LoadBalancer<InstanceMeta> loadBalancer = applicationContext.getBean(LoadBalancer.class);
@@ -52,6 +59,8 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
         context.setRouter(router);
         context.setLoadBalancer(loadBalancer);
         context.setFilters(filters);
+        context.getParameters().put("app.reties", String.valueOf(reties));
+        context.getParameters().put("app.timeout", String.valueOf(timeout));
 
         // 这里有一个技巧，利用 applicationRunner 让所有的 Bean 初始化完后，在进行 Bean 实例的获取
         final String[] names = applicationContext.getBeanDefinitionNames();

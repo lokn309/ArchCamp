@@ -60,9 +60,9 @@ public class ConsumerConfig {
         return new ZkRegistryCenter();
     }
 
-    @Bean
-    public Filter filter() {
-        return new CacheFilter();
-    }
+//    @Bean
+//    public Filter filter() {
+//        return new CacheFilter();
+//    }
 
 }

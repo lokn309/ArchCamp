@@ -3,7 +3,9 @@ package cn.lokn.knrpc.core.api;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @description: 重构，用于封装参数
@@ -18,5 +20,7 @@ public class RpcContext {
     Router<InstanceMeta> router;
 
     LoadBalancer<InstanceMeta> loadBalancer;
+
+    private Map<String, String> parameters = new HashMap<>();
 
 }

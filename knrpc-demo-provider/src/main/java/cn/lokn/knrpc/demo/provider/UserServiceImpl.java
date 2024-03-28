@@ -102,6 +102,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User find(int timeout) {
+        String port = environment.getProperty("server.port");
+        if ("8081".equals(port)) {
+            try {
+                Thread.sleep(timeout);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return new User(1001, "KN1001" + port);
+    }
+
+    @Override
     public long[] getLongIds() {
         return new long[]{1L, 3L, 5L};
     }

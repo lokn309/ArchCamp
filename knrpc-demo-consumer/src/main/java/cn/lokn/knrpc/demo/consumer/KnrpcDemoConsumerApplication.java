@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -33,6 +34,11 @@ public class KnrpcDemoConsumerApplication {
         return userService.findById(id);
     }
 
+    @RequestMapping("/find")
+    public User find(@RequestParam("timeout") int timeout) {
+        return userService.find(timeout);
+    }
+
     public static void main(String[] args) {
         SpringApplication.run(KnrpcDemoConsumerApplication.class, args);
     }
@@ -40,7 +46,11 @@ public class KnrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumerRunner() {
         return x -> {
-            testAll();
+            long start = System.currentTimeMillis();
+            userService.find(100);
+            System.out.println("userService.find task "
+                    + (System.currentTimeMillis() - start) + " ms");
+            // testAll();
         };
     }
 
