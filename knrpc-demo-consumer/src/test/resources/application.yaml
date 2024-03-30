@@ -10,6 +10,9 @@ app:
   id: app1
   namespace: public
   env: dev
+  reties: 3
+  timeout: 1000
+
 logging:
   level:
     root: info
