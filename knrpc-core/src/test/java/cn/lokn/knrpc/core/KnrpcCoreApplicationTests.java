@@ -10,4 +10,5 @@ class KnrpcCoreApplicationTests {
 	void contextLoads() {
 	}
 
+
 }
