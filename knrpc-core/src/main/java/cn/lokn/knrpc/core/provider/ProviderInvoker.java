@@ -38,6 +38,7 @@ public class ProviderInvoker {
         try {
             ProviderMeta meta = findProviderMeta(providerMetas, request.getMethodSign());
             Method method = meta.getMethod();
+            // todo 处理 list 泛型bug
             Object[] args = processArgs(request.getArgs(), method.getParameterTypes());
             final Object result = method.invoke(meta.getServiceImpl(), args);
             rpcResponse.setStatus(true);
