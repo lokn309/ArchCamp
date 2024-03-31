@@ -11,7 +11,7 @@ app:
   namespace: public
   env: dev
   reties: 2
-  timeout: 2000
+  timeout: 1000
 
 logging:
   level:

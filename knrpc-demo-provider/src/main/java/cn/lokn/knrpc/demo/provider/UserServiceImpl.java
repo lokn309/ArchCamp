@@ -8,6 +8,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -104,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User find(int timeout) {
         String port = environment.getProperty("server.port");
-        if ("8081".equals(port)) {
+        if (Arrays.stream(timeoutPorts.split(",")).anyMatch(port::equals)) {
             try {
                 Thread.sleep(timeout);
             } catch (InterruptedException e) {
@@ -112,6 +113,13 @@ public class UserServiceImpl implements UserService {
             }
         }
         return new User(1001, "KN1001" + port);
+    }
+
+    private String timeoutPorts = "8081,8084";
+
+    @Override
+    public void setTimeoutPorts(String timeoutPorts) {
+        this.timeoutPorts = timeoutPorts;
     }
 
     @Override

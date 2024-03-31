@@ -89,7 +89,7 @@ public class KNInvocationHandler implements InvocationHandler {
                         instance = context.getLoadBalancer().choose(nodes);
                         log.info(" loadBalancer.choose(urls) == " + instance);
                     } else {
-                        instance = isolatedProviders.remove(0);
+                        instance = halfOpenProviders.remove(0);
                         log.debug(" check alive instance ===> {}", instance);
                     }
                 }
@@ -101,7 +101,7 @@ public class KNInvocationHandler implements InvocationHandler {
                 try {
                     rpcResponse = httpInvoker.post(request, instance.getUrl());
                     result = castReturnResult(method, rpcResponse);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     // 故障的规则统计和隔离
                     // 每一次异常，记录一次，统计30s的异常数
                     SlidingTimeWindow window = windows.get(url);
@@ -110,11 +110,14 @@ public class KNInvocationHandler implements InvocationHandler {
                         windows.put(url, window);
                     }
 
-                    log.debug("instance {} in window with {}", url , window.getSum());
+                    window.record(System.currentTimeMillis());
+                    log.debug("instance {} in window with {}", url, window.getSum());
                     // 发生了10次，就做故障
                     if (window.getSum() >= 10) {
                         isolate(instance);
                     }
+
+                    throw e;
                 }
 
                 // 探活

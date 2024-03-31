@@ -4,6 +4,9 @@ GET http://localhost:8088/?id=34
 ### 通过调用 8088 调用超时接口
 GET http://localhost:8088/find?timeout=1000
 
+### 通过调用 8081 设置超时接口
+GET http://localhost:8082/timeoutPorts?timeoutPorts=8082,8084
+
 ### 获取用户信息
 POST http://localhost:8081/
 Content-Type: application/json

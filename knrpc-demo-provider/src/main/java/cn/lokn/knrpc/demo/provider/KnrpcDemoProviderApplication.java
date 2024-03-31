@@ -5,6 +5,7 @@ import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.provider.ProviderBoostrap;
 import cn.lokn.knrpc.core.provider.ProviderConfig;
 import cn.lokn.knrpc.core.provider.ProviderInvoker;
+import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -32,6 +34,18 @@ public class KnrpcDemoProviderApplication {
     @RequestMapping("/")
     public RpcResponse<Object> invoke(@RequestBody RpcRequest request) {
         return providerInvoker.invoke(request);
+    }
+
+    @Autowired
+    UserService userService;
+
+    @RequestMapping("/timeoutPorts")
+    public RpcResponse<Object> setTimeoutPorts(@RequestParam("timeoutPorts") String timeoutPorts) {
+        userService.setTimeoutPorts(timeoutPorts);
+        RpcResponse<Object> response = new RpcResponse<>();
+        response.setStatus(true);
+        response.setData("OK");
+        return response;
     }
 
     /**
