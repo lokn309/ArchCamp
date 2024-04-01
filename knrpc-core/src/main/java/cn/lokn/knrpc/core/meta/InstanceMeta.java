@@ -1,13 +1,15 @@
 package cn.lokn.knrpc.core.meta;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @description:
+ * @description: 描述服务实例的元数据
  * @author: lokn
  * @date: 2024/03/23 00:32
  */
@@ -21,8 +23,8 @@ public class InstanceMeta {
     private Integer port;
     private String context; // 路径上下文本
 
-    private boolean status; // online or offline
-    private Map<String, String> parameters;
+    private boolean status; // online or offline  TODO 0901 蓝绿发布
+    private Map<String, String> parameters = new HashMap<>();
 
     public String toPath() {
         return String.format("%s_%d", host, port);
@@ -42,4 +44,9 @@ public class InstanceMeta {
     public String getUrl() {
         return String.format("%s://%s:%d/%s", scheme, host, port, context);
     }
+
+    public String toMetas() {
+        return JSONObject.toJSONString(this.parameters);
+    }
+
 }

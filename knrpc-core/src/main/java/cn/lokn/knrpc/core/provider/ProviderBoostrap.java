@@ -6,6 +6,7 @@ import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
+import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
@@ -59,6 +60,8 @@ public class ProviderBoostrap implements ApplicationContextAware {
     @Value("${app.env}")
     private String env;
 
+    @Value("#{${app.metas}}")
+    private Map<String, String> metas;
 
     @PostConstruct
     public void init() {
@@ -128,6 +131,8 @@ public class ProviderBoostrap implements ApplicationContextAware {
                 .namespace(namespace)
                 .env(env)
                 .build();
+        // 注册时，向注册中心带入灰度信息
+        instance.getParameters().putAll(this.metas);
         rc.register(serviceMeta, instance);
     }
 

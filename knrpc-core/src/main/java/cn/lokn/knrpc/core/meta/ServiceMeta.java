@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @description: 描述服务元数据
+ * @description: 描述服务的元数据
  * @author: lokn
  * @date: 2024/03/23 14:57
  */
@@ -22,6 +22,5 @@ public class ServiceMeta {
 
     public String toPath() {
         return String.format("%s_%s_%s_%s", app, namespace, env, name);
-
     }
 }

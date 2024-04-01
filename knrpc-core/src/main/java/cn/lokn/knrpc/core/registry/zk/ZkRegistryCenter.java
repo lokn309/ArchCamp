@@ -6,6 +6,7 @@ import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.registry.ChangedListener;
 import cn.lokn.knrpc.core.registry.Event;
+import com.alibaba.fastjson.JSONObject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.RetryPolicy;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -65,7 +67,7 @@ public class ZkRegistryCenter implements RegistryCenter {
             // 创建实例的临时节点
             String instancePath = servicePath + "/" + instance.toPath();
             log.info(" ===> register to zk: " + instancePath);
-            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, "provider".getBytes());
+            client.create().withMode(CreateMode.EPHEMERAL).forPath(instancePath, instance.toMetas().getBytes());
         } catch (Exception e) {
             throw new RpcException(e);
         }
@@ -98,18 +100,29 @@ public class ZkRegistryCenter implements RegistryCenter {
             final List<String> nodes = client.getChildren().forPath(servicePath);
             log.info(" ===> fetchAll from zk: " + servicePath);
             nodes.forEach(System.out::println);
-
-            return mapInstance(nodes);
+            return mapInstance(servicePath, nodes);
         } catch (Exception e) {
             throw new RpcException(e);
         }
     }
 
     @NotNull
-    private static List<InstanceMeta> mapInstance(List<String> nodes) {
+    private List<InstanceMeta> mapInstance(String servicePath, List<String> nodes) {
         return nodes.stream().map(x -> {
             final String[] strs = x.split("_");
-            return InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+            final InstanceMeta instanceMeta = InstanceMeta.http(strs[0], Integer.valueOf(strs[1]));
+
+            String nodePath = servicePath + "/" + x;
+            final byte[] bytes;
+            try {
+                bytes = client.getData().forPath(nodePath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            final Map<String, String> params = JSONObject.parseObject(bytes, Map.class);
+            params.forEach((k, v) -> System.out.println(k + " -> " + v));
+            instanceMeta.setParameters(params);
+            return instanceMeta;
         }).collect(Collectors.toList());
     }
 

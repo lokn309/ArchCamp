@@ -6,7 +6,7 @@ import lombok.Data;
 import java.lang.reflect.Method;
 
 /**
- * @description:
+ * @description: 描述 provider 的映射关系
  * @author: lokn
  * @date: 2024/03/13 20:18
  */
