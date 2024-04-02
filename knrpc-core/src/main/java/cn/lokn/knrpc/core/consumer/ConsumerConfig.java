@@ -26,6 +26,10 @@ public class ConsumerConfig {
 
     @Value("${knrpc.providers}")
     String servers;
+
+    @Value("${app.grayRatio}")
+    private int grayRatio;
+
     @Bean
     public ConsumerBootstrap consumerBootstrap() {
         return new ConsumerBootstrap();
@@ -49,15 +53,15 @@ public class ConsumerConfig {
         return new RoundRibonLoadBalancer();
     }
 
-    @Bean
-    public Router router() {
-        return Router.Default;
-    }
-
 //    @Bean
-//    public Router<InstanceMeta> grayRouter() {
-//        return new GrayRouter();
+//    public Router router() {
+//        return Router.Default;
 //    }
+
+    @Bean
+    public Router<InstanceMeta> grayRouter() {
+        return new GrayRouter(grayRatio);
+    }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter consumer_rc() {

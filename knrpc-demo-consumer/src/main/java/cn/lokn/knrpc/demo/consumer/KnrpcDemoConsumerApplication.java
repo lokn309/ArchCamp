@@ -1,9 +1,12 @@
 package cn.lokn.knrpc.demo.consumer;
 
 import cn.lokn.knrpc.core.annotation.KNConsumer;
+import cn.lokn.knrpc.core.api.Router;
+import cn.lokn.knrpc.core.cluster.GrayRouter;
 import cn.lokn.knrpc.core.consumer.ConsumerConfig;
 import cn.lokn.knrpc.demo.api.User;
 import cn.lokn.knrpc.demo.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,8 +32,8 @@ public class KnrpcDemoConsumerApplication {
 //    @KNConsumer
 //    OrderService orderService;
 
-    @RequestMapping("/")
-    public User invoke(int id) {
+    @RequestMapping("/api")
+    public User invoke(@RequestParam("id") int id) {
         return userService.findById(id);
     }
 
@@ -38,6 +41,16 @@ public class KnrpcDemoConsumerApplication {
     public User find(@RequestParam("timeout") int timeout) {
         return userService.find(timeout);
     }
+
+    @Autowired
+    Router router;
+
+    @RequestMapping("/gray")
+    public String gray(@RequestParam("ratio") int ratio) {
+        ((GrayRouter) router).setGrayRatio(ratio);
+        return "OK-new gray ratio is " + ratio;
+    }
+
 
     public static void main(String[] args) {
         SpringApplication.run(KnrpcDemoConsumerApplication.class, args);
