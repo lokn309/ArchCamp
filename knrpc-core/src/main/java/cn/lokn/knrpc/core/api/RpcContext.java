@@ -23,9 +23,7 @@ public class RpcContext {
 
     private Map<String, String> parameters = new HashMap<>();
 
-    // TODO 实现从 consumer 传参数到 provider 端
-    // 需要考虑使用 ThreadLocal 考虑线程安全，
-
+    // 实现从 consumer 传参数到 provider 端
     public static ThreadLocal<Map<String, String>> contextParams = new ThreadLocal<>() {
         @Override
         protected Map<String, String> initialValue() {
