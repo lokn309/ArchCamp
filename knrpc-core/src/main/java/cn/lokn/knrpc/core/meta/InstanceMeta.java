@@ -26,10 +26,6 @@ public class InstanceMeta {
     private boolean status; // online or offline  TODO 0901 蓝绿发布
     private Map<String, String> parameters = new HashMap<>();
 
-    public String toPath() {
-        return String.format("%s_%d", host, port);
-    }
-
     public InstanceMeta(String scheme, String host, Integer port, String context) {
         this.scheme = scheme;
         this.host = host;
@@ -37,8 +33,12 @@ public class InstanceMeta {
         this.context = context;
     }
 
+    public String toPath() {
+        return String.format("%s_%d", host, port);
+    }
+
     public static InstanceMeta http(String host, Integer port) {
-        return new InstanceMeta("http", host, port, "");
+        return new InstanceMeta("http", host, port, "rpc");
     }
 
     public String getUrl() {

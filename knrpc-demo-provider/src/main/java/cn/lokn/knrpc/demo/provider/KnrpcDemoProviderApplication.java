@@ -5,6 +5,7 @@ import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.provider.ProviderBoostrap;
 import cn.lokn.knrpc.core.provider.ProviderConfig;
 import cn.lokn.knrpc.core.provider.ProviderInvoker;
+import cn.lokn.knrpc.core.transport.SpringBootTransport;
 import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -28,16 +29,10 @@ public class KnrpcDemoProviderApplication {
     }
 
     @Autowired
-    ProviderInvoker providerInvoker;
-
-    // 使用 http + json 来实现序列化和通信
-    @RequestMapping("/")
-    public RpcResponse<Object> invoke(@RequestBody RpcRequest request) {
-        return providerInvoker.invoke(request);
-    }
+    UserService userService;
 
     @Autowired
-    UserService userService;
+    SpringBootTransport providerInvoker;
 
     @RequestMapping("/timeoutPorts")
     public RpcResponse<Object> setTimeoutPorts(@RequestParam("timeoutPorts") String timeoutPorts) {
