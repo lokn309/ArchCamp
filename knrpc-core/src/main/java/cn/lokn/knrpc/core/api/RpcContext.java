@@ -26,4 +26,24 @@ public class RpcContext {
     // TODO 实现从 consumer 传参数到 provider 端
     // 需要考虑使用 ThreadLocal 考虑线程安全，
 
+    public static ThreadLocal<Map<String, String>> contextParams = new ThreadLocal<>() {
+        @Override
+        protected Map<String, String> initialValue() {
+            return new HashMap<>();
+        }
+    };
+
+    public static void setContextParams(String key, String value) {
+        contextParams.get().put(key, value);
+    }
+
+    public static String getContextParams(String key) {
+        return contextParams.get().get(key);
+    }
+
+    public static void removeContextParams(String key) {
+        contextParams.get().remove(key);
+    }
+
+
 }
