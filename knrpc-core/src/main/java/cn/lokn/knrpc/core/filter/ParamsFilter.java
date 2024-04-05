@@ -19,7 +19,7 @@ public class ParamsFilter implements Filter {
         if (params != null && !params.isEmpty()) {
             request.getParams().putAll(params);
         }
-        return request;
+        return null;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.provider;
 
+import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.api.RpcException;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
@@ -33,6 +34,9 @@ public class ProviderInvoker {
         if (MethodUtils.checkLocalMethod(request.getMethodSign())) {
             return null;
         }
+        if (!request.getParams().isEmpty()) {
+            request.getParams().forEach(RpcContext::setContextParams);
+        }
         List<ProviderMeta> providerMetas = skeleton.get(request.getService());
         RpcResponse<Object> rpcResponse = new RpcResponse<>();
         try {
@@ -48,6 +52,9 @@ public class ProviderInvoker {
             rpcResponse.setEx(new RpcException(e.getTargetException().getMessage()));
         } catch (Exception e) {
             rpcResponse.setEx(new RpcException(e.getMessage()));
+        } finally {
+            // 防止内存泄露和上下文污染
+            RpcContext.contextParams.get().clear();
         }
         return rpcResponse;
     }

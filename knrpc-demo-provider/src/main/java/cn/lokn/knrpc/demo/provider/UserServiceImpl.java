@@ -1,13 +1,15 @@
 package cn.lokn.knrpc.demo.provider;
 
 import cn.lokn.knrpc.core.annotation.KNProvider;
+import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.demo.api.User;
 import cn.lokn.knrpc.demo.api.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Map;
  */
 @Component
 @KNProvider
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -39,6 +42,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public long getId(long id) {
         return id;
+    }
+
+    @Override
+    public String echoContextParams(String key) {
+        log.debug(" ===> provider get consumer context params: ");
+        RpcContext.contextParams.get().forEach((x,y) -> {
+            System.out.println(x + " : " + y);
+        });
+        return RpcContext.getContextParams(key);
     }
 
     @Override
@@ -63,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int[] getIds() {
-        return new int[]{0 ,2, 4};
+        return new int[]{0, 2, 4};
     }
 
     @Override
@@ -126,5 +138,6 @@ public class UserServiceImpl implements UserService {
     public long[] getLongIds() {
         return new long[]{1L, 3L, 5L};
     }
+
 
 }

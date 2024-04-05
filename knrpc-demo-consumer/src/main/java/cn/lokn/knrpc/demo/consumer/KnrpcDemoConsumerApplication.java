@@ -2,6 +2,7 @@ package cn.lokn.knrpc.demo.consumer;
 
 import cn.lokn.knrpc.core.annotation.KNConsumer;
 import cn.lokn.knrpc.core.api.Router;
+import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.cluster.GrayRouter;
 import cn.lokn.knrpc.core.consumer.ConsumerConfig;
 import cn.lokn.knrpc.demo.api.User;
@@ -51,6 +52,18 @@ public class KnrpcDemoConsumerApplication {
         return "OK-new gray ratio is " + ratio;
     }
 
+    @RequestMapping("/context/message")
+    public String contexntMessage() {
+        System.out.println("Cast 18. >>===[测试 consumer 向 provider 推送 params信息 ]===");
+        String key_version = "rpc.version";
+        String key_message = "rpc.message";
+        RpcContext.setContextParams(key_version, "v01");
+        RpcContext.setContextParams(key_message, "this is a test message");
+        final String s = userService.echoContextParams(key_version);
+        System.out.println(s);
+        RpcContext.contextParams.get().clear();
+        return "推送返回结果为：" + s;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(KnrpcDemoConsumerApplication.class, args);
@@ -64,6 +77,7 @@ public class KnrpcDemoConsumerApplication {
             System.out.println("userService.find task "
                     + (System.currentTimeMillis() - start) + " ms");
             // testAll();
+
         };
     }
 
@@ -130,6 +144,16 @@ public class KnrpcDemoConsumerApplication {
 
         System.out.println("Cast 17. >>===[测试请求参数为 boolean，返回值为 User 对象]===");
         System.out.println(userService.ex(Boolean.TRUE));
+
+        System.out.println("Cast 18. >>===[测试 consumer 向 provider 推送 params信息 ]===");
+        String key_version = "rpc.version";
+        String key_message = "rpc.message";
+        RpcContext.setContextParams(key_version, "v01");
+        RpcContext.setContextParams(key_message, "this is a test message");
+        final String s = userService.echoContextParams(key_version);
+        System.out.println(s);
+        RpcContext.contextParams.get().clear();
+
     }
 
 }
