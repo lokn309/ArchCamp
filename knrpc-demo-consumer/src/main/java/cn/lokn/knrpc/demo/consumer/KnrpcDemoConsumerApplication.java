@@ -4,7 +4,7 @@ import cn.lokn.knrpc.core.annotation.KNConsumer;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.cluster.GrayRouter;
-import cn.lokn.knrpc.core.consumer.ConsumerConfig;
+import cn.lokn.knrpc.core.config.ConsumerConfig;
 import cn.lokn.knrpc.demo.api.User;
 import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

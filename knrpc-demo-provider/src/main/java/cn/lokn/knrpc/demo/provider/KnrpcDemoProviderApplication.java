@@ -2,9 +2,7 @@ package cn.lokn.knrpc.demo.provider;
 
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
-import cn.lokn.knrpc.core.provider.ProviderBoostrap;
-import cn.lokn.knrpc.core.provider.ProviderConfig;
-import cn.lokn.knrpc.core.provider.ProviderInvoker;
+import cn.lokn.knrpc.core.config.ProviderConfig;
 import cn.lokn.knrpc.core.transport.SpringBootTransport;
 import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

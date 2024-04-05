@@ -1,4 +1,4 @@
-package cn.lokn.knrpc.core.consumer;
+package cn.lokn.knrpc.core.config;
 
 import cn.lokn.knrpc.core.api.Filter;
 import cn.lokn.knrpc.core.api.LoadBalancer;
@@ -6,6 +6,7 @@ import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.api.Router;
 import cn.lokn.knrpc.core.cluster.GrayRouter;
 import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
+import cn.lokn.knrpc.core.consumer.ConsumerBootstrap;
 import cn.lokn.knrpc.core.filter.ParamsFilter;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
