@@ -37,7 +37,8 @@ public class RpcException extends RuntimeException {
     // Y => 业务类异常：通过重试，是不会获取成功，所以业务类直接抛出异常
     // Z => unknown：搞不清楚，等后期清楚后，再归类到X或Y
     public static final String SocketTimeoutEx = "X001" + "-" + "http_invoke_timeout";
-    public static final String NoSuchMethodEx = "X001" + "-" + "http_invoke_timeout";
+    public static final String NoSuchMethodEx = "X002" + "-" + "method_not_exists";
+    public static final String ExceedLimitEx = "X003" + "-" + "tpc_exceed_limit";
     public static final String UnknownEx = "Z001" + "-" + "unknown";
 
 
