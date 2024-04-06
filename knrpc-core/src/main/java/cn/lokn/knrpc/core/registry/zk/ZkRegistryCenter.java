@@ -32,10 +32,10 @@ public class ZkRegistryCenter implements RegistryCenter {
 
     private CuratorFramework client = null;
 
-    @Value("${knrpc.zkService}")
+    @Value("${knrpc.zk.zkService}")
     String servers;
 
-    @Value("${knrpc.zkRoot}")
+    @Value("${knrpc.zk.zkRoot}")
     String root;
 
     @Override

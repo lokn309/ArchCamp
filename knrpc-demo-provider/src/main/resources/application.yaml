@@ -2,17 +2,19 @@ server:
   port: 8081
 
 knrpc:
-  zkService: localhost:2181
-  zkRoot: knrpc
-
-app:
-  id: app1
-  namespace: public
-  env: dev
-  metas: "{'gray': false, 'dc': 'bj', 'unit': 'B001', 'tc':''}"
-#    gray: false
-#    dc: bj      # 机房
-#    unit: B001  # 单元
+  zk:
+    zkService: localhost:2181
+    zkRoot: knrpc
+  app:
+    id: app1
+    namespace: public
+    env: dev
+  provider:
+    metas:
+      gray: false # 是否进行灰度发布。true-是；false-否
+      dc: bj      # 机房
+      unit: B001  # 单元
+      tc:         # 流量控制。默认 30秒内20次，传入0或-1 表示不进行流量控制
 
 logging:
   level:

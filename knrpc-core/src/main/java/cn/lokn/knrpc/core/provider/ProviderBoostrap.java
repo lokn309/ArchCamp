@@ -2,6 +2,8 @@ package cn.lokn.knrpc.core.provider;
 
 import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RegistryCenter;
+import cn.lokn.knrpc.core.config.AppConfigProperties;
+import cn.lokn.knrpc.core.config.ProviderConfigProperties;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
@@ -40,28 +42,25 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     RegistryCenter rc;
 
+    private InstanceMeta instance;
+
+    private String port;
+
+    private AppConfigProperties appConfigProperties;
+
+    private ProviderConfigProperties providerConfigProperties;
+
     /**
      * 获取所有的provider
      * 统一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数，提升性能
      */
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
-    private InstanceMeta instance;
-
-    @Value("${server.port}")
-    private String port;
-
-    @Value("${app.id}")
-    private String app;
-
-    @Value("${app.namespace}")
-    private String namespace;
-
-    @Value("${app.env}")
-    private String env;
-
-    @Value("#{${app.metas}}")
-    private Map<String, String> metas;
+    public ProviderBoostrap(String port, AppConfigProperties appConfigProperties, ProviderConfigProperties providerConfigProperties) {
+        this.port = port;
+        this.appConfigProperties = appConfigProperties;
+        this.providerConfigProperties = providerConfigProperties;
+    }
 
     @PostConstruct
     public void init() {
@@ -127,12 +126,12 @@ public class ProviderBoostrap implements ApplicationContextAware {
     private void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
                 .name(service)
-                .app(app)
-                .namespace(namespace)
-                .env(env)
+                .app(appConfigProperties.getId())
+                .namespace(appConfigProperties.getNamespace())
+                .env(appConfigProperties.getEnv())
                 .build();
         // 注册时，向注册中心带入灰度信息
-        instance.getParameters().putAll(this.metas);
+        instance.getParameters().putAll(providerConfigProperties.getMetas());
         rc.register(serviceMeta, instance);
     }
 
@@ -144,7 +143,10 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     private void unRegisterService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
-                .name(service).app(app).namespace(namespace).env(env)
+                .name(service)
+                .app(appConfigProperties.getId())
+                .namespace(appConfigProperties.getNamespace())
+                .env(appConfigProperties.getEnv())
                 .build();
         rc.unregister(serviceMeta, instance);
     }

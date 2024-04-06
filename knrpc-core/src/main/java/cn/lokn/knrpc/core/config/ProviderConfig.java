@@ -7,6 +7,7 @@ import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import cn.lokn.knrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,12 +21,21 @@ import org.springframework.core.annotation.Order;
  */
 @Slf4j
 @Configuration
-@Import({SpringBootTransport.class})
+@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
+
+    @Value("${server.port}")
+    private String port;
+
+    @Autowired
+    ProviderConfigProperties providerConfigProperties;
+
+    @Autowired
+    AppConfigProperties appConfigProperties;
 
     @Bean
     ProviderBoostrap providerBoostrap() {
-        return new ProviderBoostrap();
+        return new ProviderBoostrap(port, appConfigProperties, providerConfigProperties);
     }
 
     @Bean
