@@ -9,7 +9,7 @@ app:
   id: app1
   namespace: public
   env: dev
-  metas: "{'gray': false, 'dc': 'bj', 'unit': 'B001'}"
+  metas: "{'gray': false, 'dc': 'bj', 'unit': 'B001', 'tc':''}"
 #    gray: false
 #    dc: bj      # 机房
 #    unit: B001  # 单元
