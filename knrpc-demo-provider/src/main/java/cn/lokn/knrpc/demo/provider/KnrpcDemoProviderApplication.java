@@ -29,7 +29,7 @@ public class KnrpcDemoProviderApplication {
     UserService userService;
 
     @Autowired
-    SpringBootTransport providerInvoker;
+    SpringBootTransport transport;
 
     @RequestMapping("/timeoutPorts")
     public RpcResponse<Object> setTimeoutPorts(@RequestParam("timeoutPorts") String timeoutPorts) {
@@ -54,15 +54,26 @@ public class KnrpcDemoProviderApplication {
             request.setMethodSign("findById@1_int");
             request.setArgs(new Object[]{100});
 
-            final RpcResponse userRpcResponse = providerInvoker.invoke(request);
-            System.out.println("user return : " + userRpcResponse.getData());
+//            final RpcResponse userRpcResponse = providerInvoker.invoke(request);
+//            System.out.println("user return : " + userRpcResponse.getData());
+//
+//            // test 2 parameters method
+//            request.setService("cn.lokn.knrpc.demo.api.UserService");
+//            request.setMethodSign("findById@2_int_java.lang.String");
+//            request.setArgs(new Object[]{10, "kn"});
+//            final RpcResponse user = providerInvoker.invoke(request);
+//            System.out.println("user return : " + user.getData());
 
-            // test 2 parameters method
-            request.setService("cn.lokn.knrpc.demo.api.UserService");
-            request.setMethodSign("findById@2_int_java.lang.String");
-            request.setArgs(new Object[]{10, "kn"});
-            final RpcResponse user = providerInvoker.invoke(request);
-            System.out.println("user return : " + user.getData());
+            System.out.println("Cast 19. >>===[provider 端流控测试]===");
+            for (int i = 0; i < 100; i++) {
+                try {
+                    Thread.sleep(1000);
+                    final RpcResponse<Object> result = transport.invoke(request);
+                    System.out.println(i + " *** result = " + result.getData());
+                } catch (Exception e) {
+                    System.out.println(i + " --- ex = " + e.getMessage());
+                }
+            }
 
         };
     }

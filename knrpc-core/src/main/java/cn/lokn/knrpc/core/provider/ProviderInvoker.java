@@ -4,15 +4,18 @@ import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.core.api.RpcException;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
+import cn.lokn.knrpc.core.governance.SlidingTimeWindow;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
 import cn.lokn.knrpc.core.util.TypeUtils;
-import org.springframework.util.LinkedMultiValueMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -20,14 +23,28 @@ import java.util.Optional;
  * @author: lokn
  * @date: 2024/03/22 23:43
  */
+@Slf4j
 public class ProviderInvoker {
 
     // 获取所有的provider
     // 同一将方法签名解析后放到 skeleton 桩子中，避免每次都解析请求参数
     private MultiValueMap<String, ProviderMeta> skeleton;
 
+    /**
+     * 流量控制默认为 20
+     * 当流控值为 -1 时，不进行流量控制
+     */
+    private final int trafficControl;
+    // todo 1201 : 改成map，针对不同的服务用不同的流控值
+    // todo 1202 : 对多个节点是共享一个数值，，，把这个map放到redis
+
+    final Map<String, SlidingTimeWindow> windows = new HashMap<>();
+    final Map<String, String> metas;
+
     public ProviderInvoker(ProviderBoostrap providerBoostrap) {
         this.skeleton = providerBoostrap.getSkeleton();
+        this.metas = providerBoostrap.getMetas();
+        this.trafficControl = Integer.parseInt(metas.getOrDefault("tc", "20"));
     }
 
     public RpcResponse<Object> invoke(RpcRequest request) {
@@ -37,6 +54,13 @@ public class ProviderInvoker {
         if (!request.getParams().isEmpty()) {
             request.getParams().forEach(RpcContext::setContextParams);
         }
+
+        String service = request.getService();
+        // 流控
+        if (trafficControl > 0) {
+            trafficControl(service);
+        }
+
         List<ProviderMeta> providerMetas = skeleton.get(request.getService());
         RpcResponse<Object> rpcResponse = new RpcResponse<>();
         try {
@@ -57,6 +81,20 @@ public class ProviderInvoker {
             RpcContext.contextParams.get().clear();
         }
         return rpcResponse;
+    }
+
+    private void trafficControl(String service) {
+        synchronized (windows) {
+            final SlidingTimeWindow window = windows.computeIfAbsent(service, x -> new SlidingTimeWindow());
+            if (window.calcSum() >= trafficControl) {
+                System.out.println(window);
+                throw new RpcException("service " + service + " invoker in 30s/[" + window.getSum()
+                        + "] larger than tpsLimit = " + trafficControl);
+            }
+
+            window.record(System.currentTimeMillis());
+            log.debug("service {} in window with {}", service, window.getSum());
+        }
     }
 
     private Object[] processArgs(Object[] args, Class<?>[] parameterTypes) {

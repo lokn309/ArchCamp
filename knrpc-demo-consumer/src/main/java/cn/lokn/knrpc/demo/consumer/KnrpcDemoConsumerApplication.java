@@ -72,11 +72,11 @@ public class KnrpcDemoConsumerApplication {
     @Bean
     public ApplicationRunner consumerRunner() {
         return x -> {
-            long start = System.currentTimeMillis();
-            userService.find(100);
-            System.out.println("userService.find task "
-                    + (System.currentTimeMillis() - start) + " ms");
-            // testAll();
+//            long start = System.currentTimeMillis();
+//            userService.find(100);
+//            System.out.println("userService.find task "
+//                    + (System.currentTimeMillis() - start) + " ms");
+             testAll();
 
         };
     }

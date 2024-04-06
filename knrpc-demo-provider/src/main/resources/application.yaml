@@ -17,4 +17,4 @@ app:
 logging:
   level:
     root: error
-    cn.lokn.knrpc: debug
+    cn.lokn.knrpc: info
