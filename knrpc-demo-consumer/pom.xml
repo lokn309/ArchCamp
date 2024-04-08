@@ -5,10 +5,10 @@
     <parent>
         <groupId>cn.lokn</groupId>
         <artifactId>knrpc</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>${knrpc.version}</version>
     </parent>
     <artifactId>knrpc-demo-consumer</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${knrpc.version}</version>
     <name>knrpc-demo-consumer</name>
     <description>knrpc-demo-consumer</description>
 

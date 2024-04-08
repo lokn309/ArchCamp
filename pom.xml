@@ -4,15 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.lokn</groupId>
     <artifactId>knrpc</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${knrpc.version}</version>
     <name>knrpc</name>
     <description>knrpc</description>
     <packaging>pom</packaging>
     <properties>
+        <knrpc.version>0.0.2-SNAPSHOT</knrpc.version>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncodeing>UTF-8</project.build.sourceEncodeing>
+        <project.build.targetEncodeing>UTF-8</project.build.targetEncodeing>
     </properties>
 
     <modules>
