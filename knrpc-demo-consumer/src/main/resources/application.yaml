@@ -2,17 +2,21 @@ server:
   port: 8088
 
 knrpc:
-  providers: http://localhost:8081/,http://localhost:8082/,http://localhost:8083/
-  zkService: localhost:2181
-  zkRoot: knrpc
-
-app:
-  id: app1
-  namespace: public
-  env: dev
-  reties: 2
-  timeout: 1000
-  grayRatio: 10 # 0-100
+  zk:
+    providers: http://localhost:8081/,http://localhost:8082/,http://localhost:8083/
+    zkService: localhost:2181
+    zkRoot: knrpc
+  app:
+    id: app1
+    namespace: public
+    env: dev
+  consumer:
+    reties: 2
+    timeout: 1000
+    grayRatio: 10 # 0-100
+    faultLimit: 100
+    halfOpenInitialDelay: 10_000
+    halfOpenDelay: 60_000
 
 logging:
   level:
