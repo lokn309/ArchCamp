@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "knrpc.consumer")
 public class ConsumerProperties {
 
-    private int retries = 1;
+    private int reties = 1;
     private int timeout = 1000;
     private int faultLimit = 10;
     private int halfOpenInitialDelay = 10_000;
