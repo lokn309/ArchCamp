@@ -5,7 +5,6 @@ import cn.lokn.knrpc.core.api.RpcContext;
 import cn.lokn.knrpc.demo.api.User;
 import cn.lokn.knrpc.demo.api.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

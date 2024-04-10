@@ -9,7 +9,8 @@
     <description>knrpc</description>
     <packaging>pom</packaging>
     <properties>
-        <knrpc.version>0.0.2-SNAPSHOT</knrpc.version>
+        <knrpc.version>0.0.1-SNAPSHOT</knrpc.version>
+        <apollo.versino>2.2.0</apollo.versino>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
