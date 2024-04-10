@@ -2,19 +2,17 @@ package cn.lokn.knrpc.core.provider;
 
 import cn.lokn.knrpc.core.annotation.KNProvider;
 import cn.lokn.knrpc.core.api.RegistryCenter;
-import cn.lokn.knrpc.core.config.AppConfigProperties;
-import cn.lokn.knrpc.core.config.ProviderConfigProperties;
+import cn.lokn.knrpc.core.config.AppProperties;
+import cn.lokn.knrpc.core.config.ProviderProperties;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.meta.ProviderMeta;
 import cn.lokn.knrpc.core.meta.ServiceMeta;
 import cn.lokn.knrpc.core.util.MethodUtils;
-import com.alibaba.fastjson.JSONObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,9 +44,9 @@ public class ProviderBoostrap implements ApplicationContextAware {
 
     private String port;
 
-    private AppConfigProperties appConfigProperties;
+    private AppProperties appProperties;
 
-    private ProviderConfigProperties providerConfigProperties;
+    private ProviderProperties providerProperties;
 
     /**
      * 获取所有的provider
@@ -56,10 +54,10 @@ public class ProviderBoostrap implements ApplicationContextAware {
      */
     private MultiValueMap<String, ProviderMeta> skeleton = new LinkedMultiValueMap<>();
 
-    public ProviderBoostrap(String port, AppConfigProperties appConfigProperties, ProviderConfigProperties providerConfigProperties) {
+    public ProviderBoostrap(String port, AppProperties appProperties, ProviderProperties providerProperties) {
         this.port = port;
-        this.appConfigProperties = appConfigProperties;
-        this.providerConfigProperties = providerConfigProperties;
+        this.appProperties = appProperties;
+        this.providerProperties = providerProperties;
     }
 
     @PostConstruct
@@ -126,12 +124,12 @@ public class ProviderBoostrap implements ApplicationContextAware {
     private void registerService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
                 .name(service)
-                .app(appConfigProperties.getId())
-                .namespace(appConfigProperties.getNamespace())
-                .env(appConfigProperties.getEnv())
+                .app(appProperties.getId())
+                .namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv())
                 .build();
         // 注册时，向注册中心带入灰度信息
-        instance.getParameters().putAll(providerConfigProperties.getMetas());
+        instance.getParameters().putAll(providerProperties.getMetas());
         rc.register(serviceMeta, instance);
     }
 
@@ -144,9 +142,9 @@ public class ProviderBoostrap implements ApplicationContextAware {
     private void unRegisterService(String service) {
         ServiceMeta serviceMeta = ServiceMeta.builder()
                 .name(service)
-                .app(appConfigProperties.getId())
-                .namespace(appConfigProperties.getNamespace())
-                .env(appConfigProperties.getEnv())
+                .app(appProperties.getId())
+                .namespace(appProperties.getNamespace())
+                .env(appProperties.getEnv())
                 .build();
         rc.unregister(serviceMeta, instance);
     }

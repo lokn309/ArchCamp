@@ -21,21 +21,21 @@ import org.springframework.core.annotation.Order;
  */
 @Slf4j
 @Configuration
-@Import({AppConfigProperties.class, ProviderConfigProperties.class, SpringBootTransport.class})
+@Import({AppProperties.class, ProviderProperties.class, SpringBootTransport.class})
 public class ProviderConfig {
 
     @Value("${server.port}")
     private String port;
 
     @Autowired
-    ProviderConfigProperties providerConfigProperties;
+    ProviderProperties providerProperties;
 
     @Autowired
-    AppConfigProperties appConfigProperties;
+    AppProperties appProperties;
 
     @Bean
     ProviderBoostrap providerBoostrap() {
-        return new ProviderBoostrap(port, appConfigProperties, providerConfigProperties);
+        return new ProviderBoostrap(port, appProperties, providerProperties);
     }
 
     @Bean

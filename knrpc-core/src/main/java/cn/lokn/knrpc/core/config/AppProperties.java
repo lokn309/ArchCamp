@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "knrpc.app")
-public class AppConfigProperties {
+public class AppProperties {
 
     private String id = "app1";
     private String namespace = "public";
