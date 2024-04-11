@@ -143,7 +143,7 @@ public class KnrpcDemoConsumerApplication {
         System.out.println(userService.findById(16L));
 
         System.out.println("Cast 17. >>===[测试请求参数为 boolean，返回值为 User 对象]===");
-        System.out.println(userService.ex(Boolean.TRUE));
+        System.out.println(userService.ex(Boolean.FALSE));
 
         System.out.println("Cast 18. >>===[测试 consumer 向 provider 推送 params信息 ]===");
         String key_version = "rpc.version";

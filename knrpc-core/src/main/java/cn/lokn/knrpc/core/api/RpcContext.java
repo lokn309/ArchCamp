@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.core.api;
 
+import cn.lokn.knrpc.core.config.ConsumerProperties;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import lombok.Data;
 
@@ -22,6 +23,8 @@ public class RpcContext {
     LoadBalancer<InstanceMeta> loadBalancer;
 
     private Map<String, String> parameters = new HashMap<>();
+
+    private ConsumerProperties consumerProperties;
 
     // 实现从 consumer 传参数到 provider 端
     public static ThreadLocal<Map<String, String>> contextParams = new ThreadLocal<>() {
