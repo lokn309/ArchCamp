@@ -3,6 +3,7 @@ package cn.lokn.knrpc.demo.provider;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.config.ProviderConfig;
+import cn.lokn.knrpc.core.config.ProviderProperties;
 import cn.lokn.knrpc.core.transport.SpringBootTransport;
 import cn.lokn.knrpc.demo.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class KnrpcDemoProviderApplication {
     @Autowired
     SpringBootTransport transport;
 
+    @Autowired
+    ProviderProperties providerProperties;
+
     @RequestMapping("/timeoutPorts")
     public RpcResponse<Object> setTimeoutPorts(@RequestParam("timeoutPorts") String timeoutPorts) {
         userService.setTimeoutPorts(timeoutPorts);
@@ -38,6 +42,11 @@ public class KnrpcDemoProviderApplication {
         response.setStatus(true);
         response.setData("OK");
         return response;
+    }
+
+    @RequestMapping("/meta")
+    public String metas() {
+        return providerProperties.getMetas().toString();
     }
 
     /**
@@ -64,16 +73,16 @@ public class KnrpcDemoProviderApplication {
 //            final RpcResponse user = providerInvoker.invoke(request);
 //            System.out.println("user return : " + user.getData());
 
-            System.out.println("Cast 19. >>===[provider 端流控测试]===");
-            for (int i = 0; i < 100; i++) {
-                try {
-                    Thread.sleep(1000);
-                    final RpcResponse<Object> result = transport.invoke(request);
-                    System.out.println(i + " *** result = " + result.getData());
-                } catch (Exception e) {
-                    System.out.println(i + " --- ex = " + e.getMessage());
-                }
-            }
+//            System.out.println("Cast 19. >>===[provider 端流控测试]===");
+//            for (int i = 0; i < 100; i++) {
+//                try {
+//                    Thread.sleep(1000);
+//                    final RpcResponse<Object> result = transport.invoke(request);
+//                    System.out.println(i + " *** result = " + result.getData());
+//                } catch (Exception e) {
+//                    System.out.println(i + " --- ex = " + e.getMessage());
+//                }
+//            }
 
         };
     }

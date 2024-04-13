@@ -20,7 +20,9 @@ logging:
   level:
     root: error
     cn.lokn.knrpc: info
+    com.ctrip: debug
 
+# apollo 配置中心
 app:
   id: lokn
 apollo:
@@ -29,9 +31,8 @@ apollo:
   meta: http://kimmking.cn:8080
   autoUpdateInjectedSpringProperties: true
   bootstrap:
-    eagerLoad:
-      enabled: true
-      namespaces: lokn
-      eagerLoadCache:
-        enabled: false
+    enabled: true
+    namespaces: lokn
+    eagerLoadCache:
+      enabled: false
 
