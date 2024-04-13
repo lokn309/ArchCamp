@@ -1,0 +1,37 @@
+server:
+  port: 8081
+
+knrpc:
+  zk:
+    zkRoot: knrpc
+    zkService: localhost:2181
+  app:
+    env: dev
+    id: app1
+    namespace: public
+  provider:
+    metas:
+      dc: bj
+      gray: false
+      tc: 20
+      unit: B001
+
+logging:
+  level:
+    root: error
+    cn.lokn.knrpc: info
+
+app:
+  id: lokn
+apollo:
+  cache-dir: /opt/data/
+  cluster: default
+  meta: http://kimmking.cn:8080
+  autoUpdateInjectedSpringProperties: true
+  bootstrap:
+    eagerLoad:
+      enabled: true
+      namespaces: lokn
+      eagerLoadCache:
+        enabled: false
+
