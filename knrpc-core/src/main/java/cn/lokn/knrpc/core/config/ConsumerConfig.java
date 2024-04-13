@@ -4,12 +4,14 @@ import cn.lokn.knrpc.core.api.*;
 import cn.lokn.knrpc.core.cluster.GrayRouter;
 import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
 import cn.lokn.knrpc.core.consumer.ConsumerBootstrap;
-import cn.lokn.knrpc.core.filter.ParamsFilter;
+import cn.lokn.knrpc.core.filter.ContextParamsFilter;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -26,9 +28,6 @@ import java.util.List;
 @Configuration
 @Import({AppProperties.class, ConsumerProperties.class})
 public class ConsumerConfig {
-
-//    @Value("${knrpc.providers}")
-//    String servers;
 
     @Autowired
     AppProperties appProperties;
@@ -58,32 +57,24 @@ public class ConsumerConfig {
         return new RoundRibonLoadBalancer();
     }
 
-//    @Bean
-//    public Router router() {
-//        return Router.Default;
-//    }
-
     @Bean
     public Router<InstanceMeta> grayRouter() {
         return new GrayRouter(consumerProperties.getGrayRatio());
     }
 
     @Bean(initMethod = "start", destroyMethod = "stop")
+    @ConditionalOnMissingBean
     public RegistryCenter consumer_rc() {
         return new ZkRegistryCenter();
     }
 
-//    @Bean
-//    public Filter filter() {
-//        return new CacheFilter();
-//    }
-
     @Bean
-    public Filter paramsFilter() {
-        return new ParamsFilter();
+    public Filter deaultFilter() {
+        return new ContextParamsFilter();
     }
 
     @Bean
+    @RefreshScope // 当配置文件发生改变时，会重新加载
     public RpcContext rpcContext(@Autowired Router router,
                                  @Autowired LoadBalancer loadBalancer,
                                  @Autowired List<Filter> filters) {
