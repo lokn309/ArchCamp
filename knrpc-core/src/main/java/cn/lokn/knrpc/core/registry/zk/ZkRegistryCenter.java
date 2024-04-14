@@ -139,7 +139,7 @@ public class ZkRegistryCenter implements RegistryCenter {
                     // 有任何节点变动，这里会执行
                     log.info("zk subscribe event:" + event);
                     List<InstanceMeta> nodes = fetchAll(service);
-                    listener.fire(new Event((nodes)));
+                    listener.fire(new Event(nodes));
                 }
         );
         cache.start();
