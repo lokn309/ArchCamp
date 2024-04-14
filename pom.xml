@@ -2,14 +2,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cn.lokn</groupId>
+    <groupId>io.github.lokn309</groupId>
     <artifactId>knrpc</artifactId>
     <version>${knrpc.version}</version>
     <name>knrpc</name>
     <description>knrpc</description>
     <packaging>pom</packaging>
+    <url>https://github.com/lokn309/knrpc</url>
+
+    <!-- 开源协议 上传 maven 仓库用 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/lokn309/knrpc/issues</url>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/lokn309/knrpc.git</connection>
+        <developerConnection>scm:git:https://github.com/lokn309/knrpc.git</developerConnection>
+        <url>https://github.com/lokn309/knrpc</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>luokun</name>
+            <email>1163141991@qq.com</email>
+            <url>https://github.com/lokn309</url>
+        </developer>
+    </developers>
+
     <properties>
-        <knrpc.version>0.0.1-SNAPSHOT</knrpc.version>
+        <knrpc.version>0.0.1</knrpc.version>
         <apollo.versino>2.2.0</apollo.versino>
         <spring.boot.version>3.2.3</spring.boot.version>
         <java.version>17</java.version>
@@ -55,21 +85,75 @@
             </plugin>
 
             <plugin>
-                <groupId>org.sonatype.central</groupId>
-                <artifactId>central-publishing-maven-plugin</artifactId>
-                <version>0.4.0</version>
-                <extensions>true</extensions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.0</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>bundle-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <publishingServerId>central</publishingServerId>
-                    <tokenAuth>true</tokenAuth>
-                    <excludeArtifacts>
-                        <excludeArtifact>knrpc-demo-api</excludeArtifact>
-                        <excludeArtifact>knrpc-demo-provider</excludeArtifact>
-                        <excludeArtifact>knrpc-demo-consumer</excludeArtifact>
-                    </excludeArtifacts>
+                    <maxmemory>1024</maxmemory>
+                    <encoding>UTF-8</encoding>
+                    <show>protected</show>
+                    <notree>true</notree>
+
+                    <!-- Avoid running into Java 8's very restrictive doclint issues -->
+                    <failOnError>false</failOnError>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!--                    配置方式：https://central.sonatype.org/publish/publish-portal-maven/#deploymentname -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.4.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <tokenAuth>true</tokenAuth>
+                            <autoPublish>true</autoPublish>
+                            <excludeArtifacts>
+                                <excludeArtifact>kkrpc-demo-api</excludeArtifact>
+                                <excludeArtifact>kkrpc-demo-provider</excludeArtifact>
+                                <excludeArtifact>kkrpc-demo-consumer</excludeArtifact>
+                            </excludeArtifacts>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
