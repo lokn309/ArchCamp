@@ -53,6 +53,22 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <excludeArtifacts>
+                        <excludeArtifact>knrpc-demo-api</excludeArtifact>
+                        <excludeArtifact>knrpc-demo-provider</excludeArtifact>
+                        <excludeArtifact>knrpc-demo-consumer</excludeArtifact>
+                    </excludeArtifacts>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
