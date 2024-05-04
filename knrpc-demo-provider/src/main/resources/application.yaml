@@ -16,6 +16,9 @@ knrpc:
       tc: 20
       unit: B001
 
+knregistry:
+  services: http://localhost:8484
+
 logging:
   level:
     root: error

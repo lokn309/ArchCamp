@@ -144,9 +144,9 @@
                             <tokenAuth>true</tokenAuth>
                             <autoPublish>true</autoPublish>
                             <excludeArtifacts>
-                                <excludeArtifact>kkrpc-demo-api</excludeArtifact>
-                                <excludeArtifact>kkrpc-demo-provider</excludeArtifact>
-                                <excludeArtifact>kkrpc-demo-consumer</excludeArtifact>
+                                <excludeArtifact>knrpc-demo-api</excludeArtifact>
+                                <excludeArtifact>knrpc-demo-provider</excludeArtifact>
+                                <excludeArtifact>knrpc-demo-consumer</excludeArtifact>
                             </excludeArtifacts>
                         </configuration>
                     </plugin>
