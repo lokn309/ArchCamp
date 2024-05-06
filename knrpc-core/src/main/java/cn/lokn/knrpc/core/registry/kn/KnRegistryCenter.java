@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class KnRegistryCenter implements RegistryCenter {
 
-    @Value("${knregistry.services}")
+    @Value("${knregistry.servers}")
     private String servers;
 
     @Override
