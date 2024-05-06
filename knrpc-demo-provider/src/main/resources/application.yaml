@@ -22,8 +22,8 @@ knregistry:
 logging:
   level:
     root: error
-    cn.lokn.knrpc: info
-    com.ctrip: debug
+    cn.lokn.knrpc: debug
+    com.ctrip: info
 
 # apollo 配置中心
 app:

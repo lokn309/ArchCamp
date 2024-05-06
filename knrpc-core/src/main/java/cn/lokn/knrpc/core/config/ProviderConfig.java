@@ -3,6 +3,7 @@ package cn.lokn.knrpc.core.config;
 import cn.lokn.knrpc.core.api.RegistryCenter;
 import cn.lokn.knrpc.core.provider.ProviderBoostrap;
 import cn.lokn.knrpc.core.provider.ProviderInvoker;
+import cn.lokn.knrpc.core.registry.kn.KnRegistryCenter;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import cn.lokn.knrpc.core.transport.SpringBootTransport;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +74,7 @@ public class ProviderConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     public RegistryCenter provider_rc() {
-        return new ZkRegistryCenter();
+        return new KnRegistryCenter(); // ZkRegistryCenter();
     }
 
 }

@@ -6,6 +6,7 @@ import cn.lokn.knrpc.core.cluster.RoundRibonLoadBalancer;
 import cn.lokn.knrpc.core.consumer.ConsumerBootstrap;
 import cn.lokn.knrpc.core.filter.ContextParamsFilter;
 import cn.lokn.knrpc.core.meta.InstanceMeta;
+import cn.lokn.knrpc.core.registry.kn.KnRegistryCenter;
 import cn.lokn.knrpc.core.registry.zk.ZkRegistryCenter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,7 @@ public class ConsumerConfig {
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnMissingBean
     public RegistryCenter consumer_rc() {
-        return new ZkRegistryCenter();
+        return new KnRegistryCenter(); // ZkRegistryCenter();
     }
 
     @Bean

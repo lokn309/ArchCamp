@@ -4,6 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.github.lokn309</groupId>
+<!--		<groupId>cn.lokn</groupId>-->
 		<artifactId>knrpc</artifactId>
 		<version>${knrpc.version}</version>
 	</parent>
