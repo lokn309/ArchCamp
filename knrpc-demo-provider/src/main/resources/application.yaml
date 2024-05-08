@@ -23,6 +23,7 @@ logging:
   level:
     root: error
     cn.lokn.knrpc: debug
+    cn.lokn.knregistry: debug
     com.ctrip: info
 
 # apollo 配置中心

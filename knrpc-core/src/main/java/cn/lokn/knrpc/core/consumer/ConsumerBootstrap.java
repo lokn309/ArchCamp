@@ -77,8 +77,8 @@ public class ConsumerBootstrap implements ApplicationContextAware, EnvironmentAw
                 .name(service.getCanonicalName())
                 .build();
         final List<InstanceMeta> providers = rc.fetchAll(serviceMeta);
-        log.info(" ===> map to providers:");
-        providers.forEach(System.out::println);
+        log.info(" ===> map to providers: {}", providers);
+//        providers.forEach(System.out::println);
 
         // 订阅 zk 的变化
         rc.subscribe(serviceMeta, event -> {
