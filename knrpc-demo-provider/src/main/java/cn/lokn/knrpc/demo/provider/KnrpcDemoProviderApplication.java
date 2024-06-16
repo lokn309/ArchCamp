@@ -1,5 +1,6 @@
 package cn.lokn.knrpc.demo.provider;
 
+import cn.lokn.knconfig.client.annotation.EnableKnConfig;
 import cn.lokn.knrpc.core.api.RpcRequest;
 import cn.lokn.knrpc.core.api.RpcResponse;
 import cn.lokn.knrpc.core.config.ProviderConfig;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
+@EnableKnConfig
 // 将 providerBootstrap 加载到spring容器中
 @Import({ProviderConfig.class})
 public class KnrpcDemoProviderApplication {
